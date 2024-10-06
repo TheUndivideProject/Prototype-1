@@ -1,0 +1,11 @@
+---
+title: "Philanthropic Giving to EJ-Communities (Prototype 1)"
+---
+
+This website aims to provide insights into philanthropic spending related to environmental causes by analyzing SEC and IRS data. The goal is to make philanthropic giving data more accessible and understandable, identify the sources of funding, and reveal where and to whom these funds are being directed. This information will be compiled into a dashboard tool to aid donors, communities, and policymakers in making informed decisions about environmental giving.
+
+## Website Structure
+
+-   Corporate: documents insights from financial and philanthropic metrics from the Securities and Exchange Commission (SEC) financial statements of public companies.
+
+-   Nonprofit: documents insights from financial and philanthropic metrics from the IRS Exempt Organizations Business Master File and Form 990 filings of tax-exempt organizations.
