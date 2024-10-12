@@ -1,3 +1,8 @@
 ---
 title: "Nonprofit"
 ---
+
+
+Through analysis already done with the data at the IRS, we'll create a summary of what we believe to be the most important metrics and statistics of interest that we'd like to include in our dashboard. 
+
+This will include both the data itself, as well as different ways to visualize a lot of these metrics, so our dashboard will contain a nice pipeline that will end up being easy to use.
