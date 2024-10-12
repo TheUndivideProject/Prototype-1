@@ -10,6 +10,7 @@ website:
         text: Home
       - corporate.qmd
       - nonprofit.qmd
+      - comp_analysis.qmd
 
 format:
   html:
