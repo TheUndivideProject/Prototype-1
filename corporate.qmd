@@ -1,3 +1,166 @@
 ---
 title: "Corporate"
+execute:
+  echo: false
 ---
+
+Like we're doing for the nonprofit sector, we’ll put together a summary of the important metrics and statistics we think should be included in our dashboard, based on our analysis of SEC data from the corporate sector.
+
+This will include both the data itself and some options for visualizing it.
+
+We're working with two main SEC datasets:
+
+1.  Numeric data (num.csv)—this includes information from the Balance Sheet, Income Statement, Cash Flows, Changes in Equity, and Comprehensive Income, plus any related footnotes.
+2.  Submission data (sub.csv)—this contains text fields like company names, business addresses, and submission detail level.
+
+For a deeper dive into these datasets and links to access them directly, check out this page: <https://theundivideproject.github.io/Financial-Data-Exploration/website/index.html>
+
+```{python}
+# libraries for data manipulation.
+import pandas as pd
+import numpy as np
+
+# libraries for data visualisation
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.express as px
+import plotly.io as pio
+
+# libraries for quarto rendering
+from IPython.display import Markdown,display
+
+# remove warnings
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
+
+import pandas as pd
+
+# read in data from 'sub.csv' in the 'data' folder, excluding international companies
+sub_data = pd.read_csv('./data/sub.csv')
+sub_data = sub_data[sub_data['BA COUNTRY'] == 'US'] 
+
+# read in data from 'num.csv' in the 'data' folder
+num_data = pd.read_csv('./data/num.csv')
+
+```
+
+## Transparency & Accountability
+
+### Are companies meeting the required detail levels in their financial statement submissions?
+
+The SEC uses a Boolean value to indicate if a company's financial statements meet their 'required detail' level. It's tough to give a clear definition of what that level looks like because it varies from company-to-company, but general guidelines can be found here: [AICPA Principles and Criteria for XBRL Formatted Information](https://us.aicpa.org/content/dam/aicpa/interestareas/frc/accountingfinancialreporting/xbrl/downloadabledocuments/aicpa-principles-and-criteria-for-xbrl-formatted-information.pdf). Submission detail can give insight into whether a company maintains high corporate governance standards and offers complete information to market stakeholders.
+
+#### Total Number of U.S. Submissions Containing Required Detail:
+
+```{python}
+# count the number of submissions containing required detail
+required_detail_count = (sub_data['CONTAINS REQUIRED DETAIL'] == 1).sum()
+print(required_detail_count)
+```
+
+#### Percentage of U.S. Submissions Containing Required Detail:
+
+```{python}
+required_detail_percentage = (required_detail_count / len(sub_data)) * 100
+print(round(required_detail_percentage, 1))
+```
+
+```{python}
+
+required_detail_classes = ['Yes', 'No']
+required_detail_values = [required_detail_percentage, 100 - required_detail_percentage]
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+
+# bar chart
+ax1.bar(required_detail_classes, required_detail_values)
+ax1.set_xlabel('Contains Required Detail')
+ax1.set_ylabel('Percentage (%) of U.S. Companies')
+
+# pie Chart
+ax2.pie(required_detail_values, labels=required_detail_classes, autopct='%1.1f%%', startangle=140)
+ax2.set_title('Percentage of U.S. Submissions Containing Required Detail')
+
+plt.tight_layout()
+plt.show()
+
+```
+
+#### 10 States with the Lowest Percentage of Submissions Containing Required Detail:
+
+```{python}
+# aggregate counts and calculate percentage of required detail by state
+required_detail_by_state = (
+    sub_data.groupby('BA STATE').agg(
+        required_detail_count=('CONTAINS REQUIRED DETAIL', 'sum'),
+        total_count=('CONTAINS REQUIRED DETAIL', 'count')
+    )
+    .reset_index()
+)
+
+required_detail_by_state['Percentage Containing Required Detail'] = (
+    round(required_detail_by_state['required_detail_count'] / required_detail_by_state['total_count'] * 100, 1)
+)
+
+# rename columns
+required_detail_by_state.columns = [
+    'State', 
+    'Number of Submissions Containing Required Detail', 
+    'Total Submissions', 
+    'Percentage Containing Required Detail'
+]
+
+display(required_detail_by_state.nsmallest(10, 'Percentage Containing Required Detail'))
+```
+
+#### 10 States with the Highest Percentage of Submissions Containing Required Detail:
+
+```{python}
+display(required_detail_by_state.nlargest(10, 'Percentage Containing Required Detail'))
+```
+
+#### Percentage of Submissions Containing Required Detail by Region:
+
+-   **Northeast:** CT, ME, MA, NH, NH, NY, RI, VT
+
+-   **Mid-Atlantic and Great Lakes:** DE, DC, IL, IN, IA, KY, MD, MI, MN, NE, NC, ND, OH, PA, SC, SD, VA, WV, WI
+
+-   **Gulf Coast and Pacific Coast:** AL, AK, AR, AZ, CA, CO, FL, GA, HI, ID, KS, LA, MS, MO, MT, NV, NM, OK, OR, TX, TN, UT, WA, WY
+
+```{python}
+# define regions and their corresponding states
+regions = {
+    'Northeast': ['CT', 'ME', 'MA', 'NH', 'NJ', 'NY', 'RI', 'VT'],
+    'Mid-Atlantic and Great Lakes': ['DE', 'DC', 'IL', 'IN', 'IA', 'KY', 'MD', 'MI', 'MN', 'NE', 'NC', 'ND', 'OH', 'PA', 'SC', 'SD', 'VA', 'WV', 'WI'],
+    'Gulf Coast and Pacific Coast': ['AL', 'AK', 'AR', 'AZ', 'CA', 'CO', 'FL', 'GA', 'HI', 'ID', 'KS', 'LA', 'MS', 'MO', 'MT', 'NV', 'NM', 'OK', 'OR', 'TX', 'TN', 'UT', 'WA', 'WY'],
+}
+
+# function to find the region for a given state
+def find_region(state):
+    for region, states in regions.items():
+        if state in states:
+            return region
+
+# add 'BA REGION' column based on 'BA STATE'
+sub_data['BA REGION'] = sub_data['BA STATE'].apply(find_region)
+
+# aggregate counts and calculate the percentage of required detail by region
+required_detail_by_region = sub_data.groupby('BA REGION').agg(
+    required_detail_count=('CONTAINS REQUIRED DETAIL', 'sum'),
+    total_count=('CONTAINS REQUIRED DETAIL', 'count')
+).reset_index()
+
+required_detail_by_region['Percentage Containing Required Detail'] = (
+    round(required_detail_by_region['required_detail_count'] / required_detail_by_region['total_count'] * 100, 1)
+)
+
+# rename columns
+required_detail_by_region.columns = [
+    'Region', 
+    'Number of Submissions Containing Required Detail', 
+    'Total Submissions', 
+    'Percentage Containing Required Detail'
+]
+
+display(required_detail_by_region)
+```
