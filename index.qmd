@@ -14,6 +14,9 @@ This will start as comparative analysis of Corporations and Nonprofits. This wil
 
 Utlimately, this will operate as a multi-faceted tool that combines education, transparency, and decision-making. Through the education of communities at large, we can find accoutnability and decision-making for government agencies involved not only to make sure impacted communities are served, but to hold those accountable for their philanthropic giving. This innovative dashboard will serve as a convenient platform for direct verification of funding impacts, empowering communities to track and assess the resources flowing into their areas.
 
+# Goal for this Website
+This website in particular is geared towards highlighting the most important features we find within the public datasets provided. To ensure a clear vision for how we'd like the story of philanthropic giving to be told, we've highlighted the many ways this story can be told with many different visualization ideas. For the readiness of our UX developers of our dashboard, we'd like to make sure that there is transparency within the public data that we parsed through in hopes that it will create the most effective and easy-to-use and display tool for our MVP. 
+
 ## Website Structure/Guide
 
 -   **Corporate**: documents insights from financial and philanthropic metrics from the Securities and Exchange Commission (SEC) financial statements of public companies.
@@ -21,3 +24,4 @@ Utlimately, this will operate as a multi-faceted tool that combines education, t
 -   **Nonprofit**: documents insights from financial and philanthropic metrics from the IRS Exempt Organizations Business Master File and Form 990 filings of tax-exempt organizations.
 
 -   **Comparative Analysis**: This page will highlight a comparative analysis of the individual work done on the Corporate and Nonprofit level. It will provide both a holistic view of how philanthropic giving operates at different granularities, and be the starting point for our dashboard.
+
