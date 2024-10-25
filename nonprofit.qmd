@@ -22,6 +22,7 @@ For more information on the data and it's preprocessing, please look here: <http
 
 
 ```{python}
+# Loading Libraries and Data
 # Libraries for data manipulation
 import pandas as pd
 import numpy as np
@@ -69,7 +70,11 @@ Right now, we're just looking specifically at the Northeast (inclusive of Connec
 
 ## Preliminary Statistics (Subject to Change)
 
-As of 10/14/2024, 
+```{python}
+len(df_reg_giv_irs_eo1)
+```
+
+As of 10/14/2024 in the Northeast quadrant, there are currently 266,754 tax exempt organizations, logged through the IRS' database. 
 
 
 ## Temporal Display of Tax Exempt Organizations
