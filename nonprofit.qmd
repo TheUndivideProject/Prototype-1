@@ -1,5 +1,5 @@
 ---
-title: "Nonprofit"
+title: "Nonprofit Story"
 author: "Trey Roark"
 format: 
   html:
@@ -42,7 +42,7 @@ import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
 
 # Read in data
-df_reg_giv_irs_eo1 = pd.read_csv('data/Regional Giving Data IRS eo1.csv')
+df_reg_giv_irs_eo1 = pd.read_csv('data/Updated Regional Giving Data IRS eo1.csv')
 
 # Standardize col names
 df_reg_giv_irs_eo1.columns = [x.lower() for x in df_reg_giv_irs_eo1.columns]
@@ -67,7 +67,74 @@ Looking at the Exempt Organizations Business Master File (EO BMF), which is pull
 
 Right now, we're just looking specifically at the Northeast (inclusive of Connecticut, Maine, Massachusetts, New Hampshire, New Jersey, New York, Rhode Island, Vermont). This data can be found here <https://www.irs.gov/charities-non-profits/exempt-organizations-business-master-file-extract-eo-bmf>
 
+## Preliminary Statistics (Subject to Change)
+
+As of 10/14/2024, 
 
 
+## Temporal Display of Tax Exempt Organizations
+
+In the figure below, we can see the timeline of organizations receiving their tax exempt status. First, there's been quite an increase in these organizations in the past 10 years. 
+
+```{python}
+# Make data copy
+ruling_df = df_reg_giv_irs_eo1.copy() 
+
+# Calculate percentage of zeros in RULING col
+pct_of_zeros = ruling_df['ruling'].value_counts().get(0, 0) / ruling_df.shape[0]
+#print(f"{pct_of_zeros:.2%}")
+
+# Aggregate data annually
+annual_counts = ruling_df.groupby(pd.Grouper(key='ruling', freq='Y')).size()  # 'Y' is fine here, just ensure correct usage
+
+# Apply rolling window of 5 years to smooth the data
+rolling_counts = annual_counts.rolling(window=5, center=True).mean()
+
+# Plot
+plt.figure(figsize=(9, 5))
+annual_counts.plot(alpha=0.5, label='Annual Counts')  # Original data
+rolling_counts.plot(color='red', label='5-Year Rolling Average')  # Smoothed data
+plt.title('Number of Exempt Organizations Over Time (According to Ruling Date)')
+plt.xlabel('Ruling Date (Year)')
+plt.ylabel('Number of EINs')
+plt.legend()
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+```
+
+
+
+## Geographic Display of our Tax Exempt Organizations
+
+
+State and region are determined from the filing address and generally represent the location of an organization’s headquarters, which may or may not represent the state(s) in which an organization has operations. - https://www.irs.gov/pub/irs-soi/eo-info.pdf
+
+By analyzing the addresses of the organizations, one can understand the geographic distribution of philanthropic efforts towards certain causes. This may help in assessing regional focuses and potential areas of need or gaps in support.
+
+```{python}
+#| label: fig-geo
+#| fig-cap: "Geographic Analysis of Northeast Exempt Organizations"
+
+# Write line to show plotly in quarto rendering
+pio.renderers.default = "plotly_mimetype+notebook_connected"
+
+# Take value counts of orgs by state
+state_cts = df_reg_giv_irs_eo1['state'].value_counts().reset_index()
+state_cts.columns = ['state','counts']
+state_cts['formatted_counts'] = state_cts['counts'].apply(lambda x: f"{x:,.0f}")
+
+# Build map
+fig = px.choropleth(state_cts, locations='state', locationmode='USA-states', color='counts',
+                    color_continuous_scale='Viridis', scope='usa',
+                    title='Number of Exempt Organizations by State')
+
+fig.update_traces(hovertemplate='State: %{location}<br>Count: %{customdata[0]}<extra></extra>',
+                  customdata=state_cts[['formatted_counts']].values)
+
+fig.update_layout(coloraxis_colorbar=dict(title='Organization Count'))
+
+fig.show()
+```
 
 
