@@ -1,5 +1,6 @@
 ---
 title: "Corporate"
+author: "Noha Yousif"
 execute:
   echo: false
 ---
@@ -19,6 +20,7 @@ For a deeper dive into these datasets and links to access them directly, check o
 # libraries for data manipulation.
 import pandas as pd
 import numpy as np
+import seaborn as sns
 
 # libraries for data visualisation
 import matplotlib.pyplot as plt
@@ -42,6 +44,8 @@ sub_data = sub_data[sub_data['BA COUNTRY'] == 'US']
 # read in data from 'num.csv' in the 'data' folder
 num_data = pd.read_csv('./data/num.csv')
 
+# global color cycle
+plt.rcParams['axes.prop_cycle'] = plt.cycler(color=['#d9f0a3', '#a6d96a', '#66c2a5', '#3288bd', '#4575b4', '#313695', '#f7fcb9'])
 ```
 
 ## Transparency & Accountability
@@ -50,82 +54,169 @@ num_data = pd.read_csv('./data/num.csv')
 
 The SEC uses a Boolean value to indicate if a company's financial statements meet their 'required detail' level. It's tough to give a clear definition of what that level looks like because it varies from company-to-company, but general guidelines can be found here: [AICPA Principles and Criteria for XBRL Formatted Information](https://us.aicpa.org/content/dam/aicpa/interestareas/frc/accountingfinancialreporting/xbrl/downloadabledocuments/aicpa-principles-and-criteria-for-xbrl-formatted-information.pdf). Submission detail can give insight into whether a company maintains high corporate governance standards and offers complete information to market stakeholders.
 
-#### Total Number of U.S. Submissions Containing Required Detail:
+#### **Number of U.S. Submissions Containing Required Detail:**
 
 ```{python}
-# count the number of submissions containing required detail
-required_detail_count = (sub_data['CONTAINS REQUIRED DETAIL'] == 1).sum()
-print(required_detail_count)
-```
-
-#### Percentage of U.S. Submissions Containing Required Detail:
-
-```{python}
-required_detail_percentage = (required_detail_count / len(sub_data)) * 100
-print(round(required_detail_percentage, 1))
+# calculate count of "CONTAINS REQUIRED DETAIL"
+detail_sums = (sub_data['CONTAINS REQUIRED DETAIL'] == 1).sum()
+print(detail_sums)
 ```
 
 ```{python}
+# calculate percentages of "CONTAINS REQUIRED DETAIL"
+detail_percentage = (detail_sums / len(sub_data)) * 100
+no_detail_percentage = 100 - detail_percentage
 
-required_detail_classes = ['Yes', 'No']
-required_detail_values = [required_detail_percentage, 100 - required_detail_percentage]
+labels = ['Contain Required Detail', 'DO NOT Contain Required Detail']
+percentages = [detail_percentage, no_detail_percentage]
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+# create figure
+fig, axs = plt.subplots(1, 2, figsize=(12, 6))
 
 # bar chart
-ax1.bar(required_detail_classes, required_detail_values)
-ax1.set_xlabel('Contains Required Detail')
-ax1.set_ylabel('Percentage (%) of U.S. Companies')
+axs[0].bar(labels, percentages)
+axs[0].set_title("Percentage of U.S. Submissions Containing Required Detail")
+axs[0].set_ylabel("Percentage")
+axs[0].set_ylim(0, 100)
 
-# pie Chart
-ax2.pie(required_detail_values, labels=required_detail_classes, autopct='%1.1f%%', startangle=140)
-ax2.set_title('Percentage of U.S. Submissions Containing Required Detail')
+# add text labels on top of each bar
+for i, v in enumerate(percentages):
+    axs[0].text(i, v + 2, f"{v:.1f}%", ha='center', fontweight='bold')
+
+# pie chart
+axs[1].pie(
+    percentages,
+    labels=labels,
+    autopct='%1.1f%%',
+    startangle=90,
+    wedgeprops={'edgecolor': 'white'}
+)
+axs[1].set_title("Percentage of U.S. Submissions Containing Required Detail")
 
 plt.tight_layout()
 plt.show()
-
 ```
 
-#### 10 States with the Lowest Percentage of Submissions Containing Required Detail:
-
 ```{python}
-# aggregate counts and calculate percentage of required detail by state
-required_detail_by_state = (
-    sub_data.groupby('BA STATE').agg(
-        required_detail_count=('CONTAINS REQUIRED DETAIL', 'sum'),
-        total_count=('CONTAINS REQUIRED DETAIL', 'count')
-    )
-    .reset_index()
+# percentage of submissions containing required detail by state (heatmap)
+
+# calculate sum and count of "CONTAINS REQUIRED DETAIL" by state
+state_detail_sums = sub_data.groupby('BA STATE')['CONTAINS REQUIRED DETAIL'].agg(['sum', 'count']).reset_index()
+
+# rename columns to uppercase
+state_detail_sums.columns = ['BA STATE', 'COUNT CONTAINING REQUIRED DETAIL', 'TOTAL COUNT']
+
+# calculate percentage and store it in new column
+state_detail_sums['PERCENTAGE OF STATE CONTAINING REQUIRED DETAIL'] = round( (state_detail_sums['COUNT CONTAINING REQUIRED DETAIL'] / state_detail_sums['TOTAL COUNT']) * 100, 1)
+
+# create choropleth heatmap with custom formatting
+fig = px.choropleth(
+    state_detail_sums,
+    locations='BA STATE',
+    locationmode="USA-states",
+    color='PERCENTAGE OF STATE CONTAINING REQUIRED DETAIL',
+    color_continuous_scale="YlGnBu",
+    scope="usa",
+    labels={'PERCENTAGE OF STATE CONTAINING REQUIRED DETAIL': 'Percentage with Required Detail'},
+    title="Percentage of U.S. Submissions Containing Required Detail by State"
 )
 
-required_detail_by_state['Percentage Containing Required Detail'] = (
-    round(required_detail_by_state['required_detail_count'] / required_detail_by_state['total_count'] * 100, 1)
+fig.update_layout(
+    title_font_size=20,
+    geo=dict(
+        lakecolor='rgb(255, 255, 255)',  
+        bgcolor='rgba(0,0,0,0)',         
+        showlakes=True,
+    ),
+    coloraxis_colorbar=dict(
+        title="Percentage",
+        title_font_size=16,
+        tickfont_size=14,
+        lenmode="fraction",
+        len=0.75,   
+        yanchor="middle",
+        y=0.5
+    ),
+    margin=dict(l=50, r=50, t=50, b=50)  
 )
 
-# rename columns
-required_detail_by_state.columns = [
-    'State', 
-    'Number of Submissions Containing Required Detail', 
-    'Total Submissions', 
-    'Percentage Containing Required Detail'
-]
-
-display(required_detail_by_state.nsmallest(10, 'Percentage Containing Required Detail'))
+# show figure
+fig.show()
 ```
 
-#### 10 States with the Highest Percentage of Submissions Containing Required Detail:
+#### **10 States with the Lowest Percentage of Submissions Containing Required Detail:**
 
 ```{python}
-display(required_detail_by_state.nlargest(10, 'Percentage Containing Required Detail'))
+lowest_state_detail_percentages = state_detail_sums.nsmallest(10, 'PERCENTAGE OF STATE CONTAINING REQUIRED DETAIL')
+display(lowest_state_detail_percentages)
+
+# create figure
+fig, axs = plt.subplots(1, 2, figsize=(16, 6))
+
+# bar chart
+axs[0].bar(lowest_state_detail_percentages['BA STATE'], lowest_state_detail_percentages['PERCENTAGE OF STATE CONTAINING REQUIRED DETAIL'])
+axs[0].set_title("10 States with the Lowest Percentage of Submissions Containing Required Detail")
+axs[0].set_ylabel("Percentage")
+axs[0].set_xlabel("States")
+axs[0].set_ylim(0, 30)  
+for i, v in enumerate(lowest_state_detail_percentages['PERCENTAGE OF STATE CONTAINING REQUIRED DETAIL']):
+    axs[0].text(i, v + 1, f"{v}%", ha='center', fontweight='bold')
+
+# horizontal bar chart
+axs[1].barh(lowest_state_detail_percentages['BA STATE'], 
+             lowest_state_detail_percentages['PERCENTAGE OF STATE CONTAINING REQUIRED DETAIL'])  
+axs[1].set_title("10 States with the Lowest Percentage of Submissions Containing Required Detail")
+axs[1].set_xlabel("Percentage")
+axs[1].set_ylabel("States")
+axs[1].set_xlim(0, 30)
+for i, v in enumerate(lowest_state_detail_percentages['PERCENTAGE OF STATE CONTAINING REQUIRED DETAIL']):
+    axs[1].text(v + 1, i, f"{v}%", va='center', fontweight='bold')
+
+# show figure
+plt.tight_layout()
+plt.show()
+```
+
+#### **10 States with the Highest Percentage of Submissions Containing Required Detail:**
+
+```{python}
+highest_state_detail_percentages = state_detail_sums.nlargest(10, 'PERCENTAGE OF STATE CONTAINING REQUIRED DETAIL')
+display(highest_state_detail_percentages)
+
+# create figure
+fig, axs = plt.subplots(1, 2, figsize=(16, 6))
+
+# bar chart
+axs[0].bar(highest_state_detail_percentages['BA STATE'], highest_state_detail_percentages['PERCENTAGE OF STATE CONTAINING REQUIRED DETAIL'])
+axs[0].set_title("10 States with the Highest Percentage of Submissions Containing Required Detail")
+axs[0].set_ylabel("Percentage")
+axs[0].set_xlabel("States")
+axs[0].set_ylim(0, 50)  
+for i, v in enumerate(highest_state_detail_percentages['PERCENTAGE OF STATE CONTAINING REQUIRED DETAIL']):
+    axs[0].text(i, v + 1, f"{v}%", ha='center', fontweight='bold')
+
+# horizontal bar chart
+axs[1].barh(highest_state_detail_percentages['BA STATE'], 
+             highest_state_detail_percentages['PERCENTAGE OF STATE CONTAINING REQUIRED DETAIL'])  
+axs[1].set_title("10 States with the Highest Percentage of Submissions Containing Required Detail")
+axs[1].set_xlabel("Percentage")
+axs[1].set_ylabel("States")
+axs[1].set_xlim(0, 50)
+for i, v in enumerate(highest_state_detail_percentages['PERCENTAGE OF STATE CONTAINING REQUIRED DETAIL']):
+    axs[1].text(v + 1, i, f"{v}%", va='center', fontweight='bold')
+
+# show figure
+plt.tight_layout()
+plt.show()
 ```
 
 #### Percentage of Submissions Containing Required Detail by Region:
 
--   **Northeast:** CT, ME, MA, NH, NH, NY, RI, VT
+-   Northeast: CT, ME, MA, NH, NH, NY, RI, VT
 
--   **Mid-Atlantic and Great Lakes:** DE, DC, IL, IN, IA, KY, MD, MI, MN, NE, NC, ND, OH, PA, SC, SD, VA, WV, WI
+-   Mid-Atlantic and Great Lakes: DE, DC, IL, IN, IA, KY, MD, MI, MN, NE, NC, ND, OH, PA, SC, SD, VA, WV, WI
 
--   **Gulf Coast and Pacific Coast:** AL, AK, AR, AZ, CA, CO, FL, GA, HI, ID, KS, LA, MS, MO, MT, NV, NM, OK, OR, TX, TN, UT, WA, WY
+-   Gulf Coast and Pacific Coast: AL, AK, AR, AZ, CA, CO, FL, GA, HI, ID, KS, LA, MS, MO, MT, NV, NM, OK, OR, TX, TN, UT, WA, WY
 
 ```{python}
 # define regions and their corresponding states
@@ -145,22 +236,12 @@ def find_region(state):
 sub_data['BA REGION'] = sub_data['BA STATE'].apply(find_region)
 
 # aggregate counts and calculate the percentage of required detail by region
-required_detail_by_region = sub_data.groupby('BA REGION').agg(
-    required_detail_count=('CONTAINS REQUIRED DETAIL', 'sum'),
-    total_count=('CONTAINS REQUIRED DETAIL', 'count')
-).reset_index()
+region_detail_sums = sub_data.groupby('BA REGION')['CONTAINS REQUIRED DETAIL'].agg(['sum', 'count']).reset_index()
+# rename columns to uppercase
+region_detail_sums.columns = ['BA REGION', 'COUNT CONTAINING REQUIRED DETAIL', 'TOTAL COUNT']
 
-required_detail_by_region['Percentage Containing Required Detail'] = (
-    round(required_detail_by_region['required_detail_count'] / required_detail_by_region['total_count'] * 100, 1)
-)
+# calculate percentage and store it in new column
+region_detail_sums['PERCENTAGE OF REGION CONTAINING REQUIRED DETAIL'] = round( (region_detail_sums['COUNT CONTAINING REQUIRED DETAIL'] / region_detail_sums['TOTAL COUNT']) * 100, 1)
 
-# rename columns
-required_detail_by_region.columns = [
-    'Region', 
-    'Number of Submissions Containing Required Detail', 
-    'Total Submissions', 
-    'Percentage Containing Required Detail'
-]
-
-display(required_detail_by_region)
+display(region_detail_sums)
 ```
