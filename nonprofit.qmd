@@ -1,8 +1,54 @@
 ---
 title: "Nonprofit"
+author: "Trey Roark"
+format: 
+  html:
+    toc: true
+    toc-title: "Table of Contents"
+    embed-resources: true
+    warnings: false
+    code-fold: true
+execute:
+  echo: true
 ---
 
 
 Through analysis already done with the data at the IRS, we'll create a summary of what we believe to be the most important metrics and statistics of interest that we'd like to include in our dashboard. 
 
 This will include both the data itself, as well as different ways to visualize a lot of these metrics, so our dashboard will contain a nice pipeline that will end up being easy to use.
+
+For more information on the data and it's preprocessing, please look here: <https://theundivideproject.github.io/Philanthropic-Giving-Analysis.github.io/>
+
+
+```{python}
+# Libraries for data manipulation
+import pandas as pd
+import numpy as np
+
+# Libraries for data vis
+import matplotlib.pyplot as plt
+import seaborn as sns
+import plotly.express as px
+import plotly.io as pio
+
+# Libraries for quarto rending
+from IPython.display import Markdown,display
+from tabulate import tabulate
+import plotly.io as pio
+
+# Remove warnings
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
+
+# Read in data
+df_reg_giv_irs_eo1 = pd.read_csv('data/Regional Giving Data IRS eo1.csv')
+```
+
+
+
+
+
+
+
+
+
