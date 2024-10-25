@@ -107,10 +107,8 @@ plt.show()
 
 ## Geographic Display of our Tax Exempt Organizations
 
+We can see a representation of these organization's headquarters by count in each state below. (For potential regional focuses and gaps in support identification)
 
-State and region are determined from the filing address and generally represent the location of an organization’s headquarters, which may or may not represent the state(s) in which an organization has operations. - https://www.irs.gov/pub/irs-soi/eo-info.pdf
-
-By analyzing the addresses of the organizations, one can understand the geographic distribution of philanthropic efforts towards certain causes. This may help in assessing regional focuses and potential areas of need or gaps in support.
 
 ```{python}
 #| label: fig-geo
