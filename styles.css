@@ -1,1 +1,17 @@
-/* css styles */
+nav.navbar {
+    background-color: #1720a8;
+}
+nav.navbar a.active,
+nav.navbar a:active {
+    color: white; /* Changes text color to white */
+    background-color: #1720a8; /* Maintains the dark green background if needed */
+}
+nav.navbar a.active:hover,
+nav.navbar a:active:hover {
+    color: white; /* Keeps text color white on hover */
+    background-color: #1720a8; 
+}
+.sidebar nav[role="doc-toc"] ul > li > a.active {
+    color: #680baf !important;
+    font-weight: bold;
+}

@@ -11,10 +11,20 @@ website:
       - corporate.qmd
       - nonprofit.qmd
       - comp_analysis.qmd
+    right:
+      - icon: twitter
+        href: http://linktr.ee/theundivide
+      - icon: github
+        href: https://github.com/TheUndivideProject
+        aria-label: GitHub
 
+  page-footer:
+    right: |
+      Made with [Quarto](https://quarto.org/)<br>
+
+    
 format:
   html:
-    theme: cosmo
     css: styles.css
     toc: true
 
