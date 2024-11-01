@@ -1,8 +1,13 @@
 ---
 title: "Corporate"
 author: "Noha Yousif"
-execute:
-  echo: false
+format: 
+  html:
+    toc: true
+    toc-title: "Table of Contents"
+    embed-resources: true
+    warnings: false
+    code-fold: true
 ---
 
 Like we're doing for the nonprofit sector, we’ll put together a summary of the important metrics and statistics we think should be included in our dashboard, based on our analysis of SEC data from the corporate sector.
@@ -17,7 +22,7 @@ We're working with two main SEC datasets:
 For a deeper dive into these datasets and links to access them directly, check out this page: <https://theundivideproject.github.io/Financial-Data-Exploration/website/index.html>
 
 ```{python}
-# libraries for data manipulation.
+# libraries for data manipulation
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -54,7 +59,7 @@ plt.rcParams['axes.prop_cycle'] = plt.cycler(color=['#d9f0a3', '#a6d96a', '#66c2
 
 The SEC uses a Boolean value to indicate if a company's financial statements meet their 'required detail' level. It's tough to give a clear definition of what that level looks like because it varies from company-to-company, but general guidelines can be found here: [AICPA Principles and Criteria for XBRL Formatted Information](https://us.aicpa.org/content/dam/aicpa/interestareas/frc/accountingfinancialreporting/xbrl/downloadabledocuments/aicpa-principles-and-criteria-for-xbrl-formatted-information.pdf). Submission detail can give insight into whether a company maintains high corporate governance standards and offers complete information to market stakeholders.
 
-#### **Number of U.S. Submissions Containing Required Detail:**
+#### **Percentage of U.S. Submissions Containing Required Detail:**
 
 ```{python}
 # calculate count of "CONTAINS REQUIRED DETAIL"
@@ -118,7 +123,7 @@ fig = px.choropleth(
     color_continuous_scale="YlGnBu",
     scope="usa",
     labels={'PERCENTAGE OF STATE CONTAINING REQUIRED DETAIL': 'Percentage with Required Detail'},
-    title="Percentage of U.S. Submissions Containing Required Detail by State"
+    title="Percentage of State Submissions Containing Required Detail"
 )
 
 fig.update_layout(
@@ -148,7 +153,6 @@ fig.show()
 
 ```{python}
 lowest_state_detail_percentages = state_detail_sums.nsmallest(10, 'PERCENTAGE OF STATE CONTAINING REQUIRED DETAIL')
-display(lowest_state_detail_percentages)
 
 # create figure
 fig, axs = plt.subplots(1, 2, figsize=(16, 6))
@@ -181,7 +185,6 @@ plt.show()
 
 ```{python}
 highest_state_detail_percentages = state_detail_sums.nlargest(10, 'PERCENTAGE OF STATE CONTAINING REQUIRED DETAIL')
-display(highest_state_detail_percentages)
 
 # create figure
 fig, axs = plt.subplots(1, 2, figsize=(16, 6))
@@ -190,8 +193,8 @@ fig, axs = plt.subplots(1, 2, figsize=(16, 6))
 axs[0].bar(highest_state_detail_percentages['BA STATE'], highest_state_detail_percentages['PERCENTAGE OF STATE CONTAINING REQUIRED DETAIL'])
 axs[0].set_title("10 States with the Highest Percentage of Submissions Containing Required Detail")
 axs[0].set_ylabel("Percentage")
-axs[0].set_xlabel("States")
-axs[0].set_ylim(0, 50)  
+axs[0].set_xlabel("State")
+axs[0].set_ylim(0, 40)  
 for i, v in enumerate(highest_state_detail_percentages['PERCENTAGE OF STATE CONTAINING REQUIRED DETAIL']):
     axs[0].text(i, v + 1, f"{v}%", ha='center', fontweight='bold')
 
@@ -200,8 +203,8 @@ axs[1].barh(highest_state_detail_percentages['BA STATE'],
              highest_state_detail_percentages['PERCENTAGE OF STATE CONTAINING REQUIRED DETAIL'])  
 axs[1].set_title("10 States with the Highest Percentage of Submissions Containing Required Detail")
 axs[1].set_xlabel("Percentage")
-axs[1].set_ylabel("States")
-axs[1].set_xlim(0, 50)
+axs[1].set_ylabel("State")
+axs[1].set_xlim(0, 40)
 for i, v in enumerate(highest_state_detail_percentages['PERCENTAGE OF STATE CONTAINING REQUIRED DETAIL']):
     axs[1].text(v + 1, i, f"{v}%", va='center', fontweight='bold')
 
@@ -210,7 +213,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-#### Percentage of Submissions Containing Required Detail by Region:
+#### **Percentage of Region Submissions Containing Required Detail:**
 
 -   Northeast: CT, ME, MA, NH, NH, NY, RI, VT
 
@@ -243,5 +246,93 @@ region_detail_sums.columns = ['BA REGION', 'COUNT CONTAINING REQUIRED DETAIL', '
 # calculate percentage and store it in new column
 region_detail_sums['PERCENTAGE OF REGION CONTAINING REQUIRED DETAIL'] = round( (region_detail_sums['COUNT CONTAINING REQUIRED DETAIL'] / region_detail_sums['TOTAL COUNT']) * 100, 1)
 
-display(region_detail_sums)
+# create figure
+fig, axs = plt.subplots(1, 3, figsize=(24, 6))
+
+# bar chart
+axs[0].bar(region_detail_sums['BA REGION'], region_detail_sums['PERCENTAGE OF REGION CONTAINING REQUIRED DETAIL'])
+axs[0].set_title("Percentage of Region Submissions Containing Required Detail")
+axs[0].set_ylabel("Percentage")
+axs[0].set_xlabel("Region")
+axs[0].set_ylim(0, 40)  
+for i, v in enumerate(region_detail_sums['PERCENTAGE OF REGION CONTAINING REQUIRED DETAIL']):
+    axs[0].text(i, v + 1, f"{v}%", ha='center', fontweight='bold')
+
+# horizontal bar chart
+axs[1].barh(region_detail_sums['BA REGION'], 
+             region_detail_sums['PERCENTAGE OF REGION CONTAINING REQUIRED DETAIL'])  
+axs[1].set_title("Percentage of Region Submissions Containing Required Detail")
+axs[1].set_xlabel("Percentage")
+axs[1].set_ylabel("Region")
+axs[1].set_xlim(0, 40)
+for i, v in enumerate(region_detail_sums['PERCENTAGE OF REGION CONTAINING REQUIRED DETAIL']):
+    axs[1].text(v + 1, i, f"{v}%", va='center', fontweight='bold')
+    
+# pie chart
+axs[2].pie(region_detail_sums['PERCENTAGE OF REGION CONTAINING REQUIRED DETAIL'], labels=region_detail_sums['BA REGION'], autopct='%1.1f%%', startangle=90, wedgeprops={'edgecolor': 'white'})
+plt.title("Percentage of U.S. Submissions Containing Required Detail")
+
+plt.tight_layout()
+```
+
+### Are environmental-specific companies meeting the required detail levels in their financial statement submissions?
+
+Standard Industrial Classification (SIC) codes categorize industries based on their business activities. I used these codes to identify companies in environmental sectors. Although this approach is not the most reliable method for determining philanthropic giving patterns, we will assume these companies support environmental causes for the purposes of these visualizations.
+
+#### **Percentage of Environmental-Specific Submissions Containing Required Detail:**
+
+```{python}
+sic_categories = {
+    'Agriculture': [100, 200, 900],
+    'Forestry': [800],
+    'Mining': [1400],
+    'Energy': [1311, 1381, 1389, 4900, 4911],
+    'Construction': [1623],
+    'Water Management': [4941],
+    'Waste Management': [4950, 4953, 4955]
+}
+
+# map SIC codes to categories
+sub_data['INDUSTRY'] = sub_data['CLASSIFICATION'].apply(
+    lambda x: next((category for category, codes in sic_categories.items() if x in codes), 'Other')
+)
+
+# aggregate counts and calculate the percentage of required detail by industry
+classification_detail_sums = sub_data.groupby('INDUSTRY')['CONTAINS REQUIRED DETAIL'].agg(['sum', 'count']).reset_index()
+classification_detail_sums.columns = ['INDUSTRY', 'COUNT CONTAINING REQUIRED DETAIL', 'TOTAL COUNT']
+
+# calculate percentage and store it in new column
+classification_detail_sums['PERCENTAGE OF CATEGORY CONTAINING REQUIRED DETAIL'] = round(
+    (classification_detail_sums['COUNT CONTAINING REQUIRED DETAIL'] / classification_detail_sums['TOTAL COUNT']) * 100, 1
+)
+
+# create figure
+fig, axs = plt.subplots(1, 3, figsize=(36, 6))
+
+# bar chart
+axs[0].bar(classification_detail_sums['INDUSTRY'], classification_detail_sums['PERCENTAGE OF CATEGORY CONTAINING REQUIRED DETAIL'])
+axs[0].set_title("Percentage of Environmental-Specific Submissions Containing Required Detail")
+axs[0].set_ylabel("Percentage")
+axs[0].set_xlabel("Industry")
+axs[0].set_ylim(0, 40)  
+for i, v in enumerate(classification_detail_sums['PERCENTAGE OF CATEGORY CONTAINING REQUIRED DETAIL']):
+    axs[0].text(i, v + 1, f"{v}%", ha='center', fontweight='bold')
+
+# horizontal bar chart
+axs[1].barh(classification_detail_sums['INDUSTRY'], 
+             classification_detail_sums['PERCENTAGE OF CATEGORY CONTAINING REQUIRED DETAIL'])  
+axs[1].set_title("Percentage of Environmental-Specific Submissions Containing Required Detail")
+axs[1].set_xlabel("Percentage")
+axs[1].set_ylabel("Industry Categories")
+axs[1].set_xlim(0, 40)
+for i, v in enumerate(classification_detail_sums['PERCENTAGE OF CATEGORY CONTAINING REQUIRED DETAIL']):
+    axs[1].text(v + 1, i, f"{v}%", va='center', fontweight='bold')
+
+# pie chart
+axs[2].pie(classification_detail_sums['PERCENTAGE OF CATEGORY CONTAINING REQUIRED DETAIL'], 
+           labels=classification_detail_sums['INDUSTRY'], autopct='%1.1f%%', startangle=90, wedgeprops={'edgecolor': 'white'})
+plt.title("Percentage of U.S. Submissions Containing Required Detail")
+
+plt.tight_layout()
+plt.show()
 ```
