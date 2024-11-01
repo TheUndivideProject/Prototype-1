@@ -1,5 +1,7 @@
 ---
 title: "Philanthropic Giving to EJ-Communities (Prototype 1)"
+execute:
+  echo: false
 ---
 
 ## Mission Statement & Story
@@ -31,19 +33,123 @@ This website in particular is geared towards highlighting the most important fea
 
 In an attempt to gauge the current thoughts on philanthropic giving, there were qualitative interviews conducted to several foundations and their team members in different sectors. These charts give us a small glimpse at why we're doing what we're doing. 
 
-```{r, warnings=FALSE}
-suppressMessages(library(ggplot2))
-suppressMessages(library(dplyr))
-suppressMessages(library(tidyr))
-suppressMessages(library(tidyverse))
-suppressMessages(library(stringr))
 
-Interviews <- read_excel("data/Interviews.xlsx")
+```{r, echo = FALSE}
+suppressWarnings(suppressMessages(library(ggplot2)))
+suppressWarnings(suppressMessages(library(dplyr)))
+suppressWarnings(suppressMessages(library(tidyr)))
+suppressWarnings(suppressMessages(library(tidyverse)))
+suppressWarnings(suppressMessages(library(stringr)))
+suppressWarnings(suppressMessages(library(readxl)))
+suppressWarnings(suppressMessages(library(janitor)))
+
+suppressMessages(Interviews <- read_excel("data/Interviews.xlsx"))
 
 # Rename columns 7 to 11
 colnames(Interviews)[7:11] <- paste0("Q", 1:5)
 ```
 
+```{r}
+# Create Dataset
+Inter_q2 <- na.omit(Interviews[,c("Q1","Q2")])
+
+# Create the bar plot
+ggplot(Inter_q2, aes(x = Q2, fill = Q1)) + 
+  geom_bar(col = 'black', position = position_dodge(width = 0.8), width = 0.7) +
+  scale_fill_brewer(palette = "Set1") + # Change color palette
+  labs(
+    title = str_wrap("Do you believe that the current funding processes of corporate and philanthropic giving officers are efficient?", width = 60),
+    x = "Answer",
+    y = "Count",
+    fill = "Sector"
+  ) +
+  theme_classic() +
+  theme(
+    title = element_text(size = 13, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "top", # Position the legend at the top
+    legend.title = element_text(face = "bold", size = 12)
+  )
+```
+
+*Insert Explanation Here*
 
 
+
+```{r}
+# Create Dataset
+Inter_q3 <- na.omit(Interviews[,c("Q1","Q3")])
+
+# Create the bar plot
+ggplot(Inter_q3, aes(x = Q3, fill = Q1)) + 
+  geom_bar(col = 'black', position = position_dodge(width = 0.8), width = 0.7) +
+  scale_fill_brewer(palette = "Set1") + # Change color palette
+  labs(
+    title = str_wrap("Do you think the current process for distributing funding earmarked for social justice topics is transparent and reliable?", width = 60),
+    x = "Answer",
+    y = "Count",
+    fill = "Sector"
+  ) +
+  theme_classic() +
+  theme(
+    title = element_text(size = 13, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "top", # Position the legend at the top
+    legend.title = element_text(face = "bold", size = 12)
+  )
+```
+
+*Insert Explanation Here*
+
+
+
+```{r}
+# Create Dataset
+Inter_q4 <- na.omit(Interviews[,c("Q1","Q4")])
+
+# Create the bar plot
+ggplot(Inter_q4, aes(x = Q4, fill = Q1)) + 
+  geom_bar(col = 'black', position = position_dodge(width = 0.8), width = 0.7) +
+  scale_fill_brewer(palette = "Set1") + # Change color palette
+  labs(
+    title = str_wrap("Do you believe that the current funding and reporting processes of corporate and philanthropic giving reflect the experiences of the communities they hope to reach?", width = 60),
+    x = "Answer",
+    y = "Count",
+    fill = "Sector"
+  ) +
+  theme_classic() +
+  theme(
+    title = element_text(size = 13, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "top", # Position the legend at the top
+    legend.title = element_text(face = "bold", size = 12)
+  )
+```
+
+*Insert Explanation Here*
+
+```{r}
+# Create Dataset
+Inter_q5 <- na.omit(Interviews[,c("Q1","Q5")])
+
+# Create the bar plot
+ggplot(Inter_q5, aes(x = Q5, fill = Q1)) + 
+  geom_bar(col = 'black', position = position_dodge(width = 0.8), width = 0.7) +
+  scale_fill_brewer(palette = "Set1") + # Change color palette
+  labs(
+    title = str_wrap("Would you be interested in establishing more transparent relationships with community groups and finance organizations?", width = 60),
+    x = "Answer",
+    y = "Count",
+    fill = "Sector"
+  ) +
+  theme_classic() +
+  theme(
+    title = element_text(size = 13, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "top", # Position the legend at the top
+    legend.title = element_text(face = "bold", size = 12)
+  )
+```
+
+*Insert Explanation Here*
 
