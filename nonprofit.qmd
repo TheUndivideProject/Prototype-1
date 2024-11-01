@@ -14,12 +14,11 @@ execute:
 
 # Overview
 
-Through analysis already done by Trey Roark and Amelia Baier with the data at the IRS, we'll create a summary of what we believe to be the most important metrics and statistics of interest that we'd like to include in our dashboard. Additionally, we'll visualize these metrics and expand upon how we best believe they can be used to help our use cases.  
+Through analysis already done by Trey Roark and Amelia Baier with the data at the IRS, we'll create a summary of what we believe to be the most important metrics and statistics of interest that we'd like to include in our dashboard. Additionally, we'll visualize these metrics and expand upon how we best believe they can be used to help our use cases.
 
 This will include both the data itself, as well as different ways to visualize a lot of these metrics, so our dashboard will contain a nice pipeline that will end up being easy to use.
 
 For more information on the data and it's preprocessing, please look here: <https://theundivideproject.github.io/Philanthropic-Giving-Analysis.github.io/>
-
 
 ```{python}
 # Loading Libraries and Data
@@ -61,10 +60,9 @@ for col in date_cols:
     df_reg_giv_irs_eo1[col] = pd.to_datetime(df_reg_giv_irs_eo1[col], format='%Y%m', errors='coerce')
 ```
 
-
 # EOMBF Findings
 
-Looking at the Exempt Organizations Business Master File (EO BMF), which is pulled from the Internal Revenue Service's Business Master File, provides some features that can be used for a detailed analysis of philanthropic giving, particular within the environmental and social justice sectors. 
+Looking at the Exempt Organizations Business Master File (EO BMF), which is pulled from the Internal Revenue Service's Business Master File, provides some features that can be used for a detailed analysis of philanthropic giving, particular within the environmental and social justice sectors.
 
 Right now, we're just looking specifically at the Northeast (inclusive of Connecticut, Maine, Massachusetts, New Hampshire, New Jersey, New York, Rhode Island, Vermont). This data can be found here <https://www.irs.gov/charities-non-profits/exempt-organizations-business-master-file-extract-eo-bmf>
 
@@ -74,12 +72,11 @@ Right now, we're just looking specifically at the Northeast (inclusive of Connec
 len(df_reg_giv_irs_eo1)
 ```
 
-As of 10/14/2024 in the Northeast quadrant, there are currently 266,754 tax exempt organizations, logged through the IRS' database. 
-
+As of 10/14/2024 in the Northeast quadrant, there are currently 266,754 tax exempt organizations, logged through the IRS' database.
 
 ## Temporal Display of Tax Exempt Organizations
 
-In the figure below, we can see the timeline of organizations receiving their tax exempt status. First, there's been quite an increase in these organizations in the past 10 years. 
+In the figure below, we can see the timeline of organizations receiving their tax exempt status. First, there's been quite an increase in these organizations in the past 10 years.
 
 ```{python}
 # Make data copy
@@ -107,8 +104,6 @@ plt.xticks(rotation=45)
 plt.tight_layout()
 plt.show()
 ```
-
-
 
 ## Geographic Display of our Tax Exempt Organizations
 
