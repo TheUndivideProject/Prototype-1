@@ -159,3 +159,4 @@ ggplot(Inter_q5, aes(x = Q5, fill = Q1)) +
 ```
 
 This last question showed a unanimous count of those individuals indicating they'd be interested in establishing more transparent relationships with community groups and finance organizations, granting us confidence in our motivation moving forward with producing and facilitating this data dashboard and feedback loop. 
+
