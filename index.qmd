@@ -72,7 +72,9 @@ ggplot(Inter_q2, aes(x = Q2, fill = Q1)) +
   )
 ```
 
-*Insert Explanation Here*
+In the chart above we can see a split decision from the survey when asked about the efficient of current proccesses of corporate and philanthropic giving officers. 
+
+
 
 
 
@@ -99,7 +101,9 @@ ggplot(Inter_q3, aes(x = Q3, fill = Q1)) +
   )
 ```
 
-*Insert Explanation Here*
+In this next question we asked, the majority of our respondents were asked to clarify if they believed the current process and feedback loop established for distribution funding for social justice topics is transparent and reliable. The responses recommend action should be taken as there isn't an overwhelming majority of people at these organizations who believe in it's current transparency. 
+
+
 
 
 
@@ -126,7 +130,10 @@ ggplot(Inter_q4, aes(x = Q4, fill = Q1)) +
   )
 ```
 
-*Insert Explanation Here*
+As there exists no feedback loop, we're hoping to provide more transparency to those who are involved in philanthropic giving in order to further clarify whether this giving and it's current funding/reporting reflect the experiences of the communities they hope to reach. 
+
+
+
 
 ```{r}
 # Create Dataset
@@ -151,5 +158,4 @@ ggplot(Inter_q5, aes(x = Q5, fill = Q1)) +
   )
 ```
 
-*Insert Explanation Here*
-
+This last question showed a unanimous count of those individuals indicating they'd be interested in establishing more transparent relationships with community groups and finance organizations, granting us confidence in our motivation moving forward with producing and facilitating this data dashboard and feedback loop. 
