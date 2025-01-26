@@ -1,4 +1,5 @@
 import streamlit as st
+import matplotlib.pyplot as plt
 
 # Set up page configuration
 st.set_page_config(
@@ -7,7 +8,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# Title and Introduction
+# Title and Introducption
 st.title("🌱 SEED: Sustainability and Equity Environmental Dashboards")
 st.markdown("""
 Welcome to SEED, your one-stop platform for transparency and impact reporting. 
