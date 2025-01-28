@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.express as px
 
 # page configuration
 st.set_page_config(
@@ -25,7 +25,7 @@ col4, col5, col6 = st.columns(3)
 with st.container():
     col1.metric("Registrants", sec_data["Name"].nunique(), border=True)
     col2.metric("Standard Industrial Classification (SIC)", sec_data["Standard Industrial Classification (SIC)"].nunique(), border=True)
-    col3.metric("Median Pubilc Float", f"${sec_data['Public Float'].median():,.0f}", border=True)
+    col3.metric("Median Public Float", f"${sec_data['Public Float'].median():,.0f}", border=True)
 
 with st.container():
     col4.metric("Minimum Filing Date", sec_data["Date of Filing"].min(), border=True)
