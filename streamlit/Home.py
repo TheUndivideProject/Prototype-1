@@ -36,11 +36,15 @@ st.sidebar.markdown(
         """,
         unsafe_allow_html=True,
     )
-    
-# Add Sidebar image and Text
-st.sidebar.title("Navigation")
-st.sidebar.markdown("Select a page to view:")
-page = st.sidebar.radio("Pages", ["Corporate SEC Dashboard", "Nonprofit IRS Dashboard"])
+
+
+
+
+  
+# # Add Sidebar image and Text
+# st.sidebar.title("Navigation")
+# st.sidebar.markdown("Select a page to view:")
+# page = st.sidebar.radio("Pages", ["Corporate SEC Dashboard", "Nonprofit IRS Dashboard"])
 
 
 
