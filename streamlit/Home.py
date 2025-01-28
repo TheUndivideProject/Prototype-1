@@ -44,8 +44,9 @@ page = st.sidebar.radio("Pages", ["Corporate SEC Dashboard", "Nonprofit IRS Dash
 
 
 
-# Load selected page
-if page == "Corporate SEC Dashboard":
-    st.experimental_rerun()  # Redirect to the Corporate SEC page
-elif page == "Nonprofit IRS Dashboard":
-    st.experimental_rerun()  # Redirect to the Nonprofit IRS page
+
+# # Load selected page
+# if page == "Corporate SEC Dashboard":
+#     st.experimental_rerun()  # Redirect to the Corporate SEC page
+# elif page == "Nonprofit IRS Dashboard":
+#     st.experimental_rerun()  # Redirect to the Nonprofit IRS page
