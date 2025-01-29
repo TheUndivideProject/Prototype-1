@@ -7,7 +7,7 @@ import plotly.express as px
 
 # Page configuration
 st.set_page_config(
-    page_title="Nonprofit IRS Form 990 Data Dashboard",
+    page_title="📋Nonprofit IRS Form 990 Data Dashboard",
     layout="wide",
 )
 
