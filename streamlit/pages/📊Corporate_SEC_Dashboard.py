@@ -87,8 +87,8 @@ top_city2 = city_counts.iloc[1]['City'].title()
 top_city3 = city_counts.iloc[2]['City'].title()
 
 # add context
-col7.markdown(f"**{top_state1}**, **{top_state2}**, and **{top_state3}** are the three states with the **highest** number of corporate headquarters. These headquarters can increase the number of high-income earners in the state, resulting in **more direct donations** to charitable organizations (Card, Hallock, & Moretti, 2009).")
-col8.markdown(f"**{top_city1}**, **{top_city2}**, and **{top_city3}** are the three cities with the **highest** number of corporate headquarters. These headquarters can increase the number of high-income earners in the state, resulting in **more direct donations** to charitable organizations (Card, Hallock, & Moretti, 2009).")
+col7.markdown(f"**{top_state1}**, **{top_state2}**, and **{top_state3}** were the three states with the **highest** number of corporate headquarters. These headquarters can increase the number of high-income earners in the state, resulting in **more direct donations** to charitable organizations (Card, Hallock, & Moretti, 2009).")
+col8.markdown(f"**{top_city1}**, **{top_city2}**, and **{top_city3}** were the three cities with the **highest** number of corporate headquarters. These headquarters can increase the number of high-income earners in the state, resulting in **more direct donations** to charitable organizations (Card, Hallock, & Moretti, 2009).")
 
 # will visualize the bottom X cities here once I receive feedback from the team.
 
@@ -112,7 +112,7 @@ bottom_state2 = states.lookup(state_counts.iloc[-2]['State']).name
 bottom_state3 = states.lookup(state_counts.iloc[-1]['State']).name
 
 # add context
-col7.markdown(f"**{bottom_state1}**, **{bottom_state2}**, and **{bottom_state3}** are the three states with the **lowest** number of corporate headquarters. The lack of headquarters can limit the number of high-income earners in the state, resulting in **fewer direct donations** to charitable organizations (Card, Hallock, & Moretti, 2009).")
+col7.markdown(f"**{bottom_state1}**, **{bottom_state2}**, and **{bottom_state3}** were the three states with the **lowest** number of corporate headquarters. The lack of headquarters can limit the number of high-income earners in the state, resulting in **fewer direct donations** to charitable organizations (Card, Hallock, & Moretti, 2009).")
 
 # aggregate number of companies by sector 
 sector_counts = data["Standard Industrial Classification (SIC)"].value_counts().reset_index()
@@ -135,7 +135,7 @@ top_sector2 = int(sector_counts.iloc[1]['Standard Industrial Classification (SIC
 top_sector3 = int(sector_counts.iloc[3]['Standard Industrial Classification (SIC)'])
 
 # add context
-st.markdown(f"SICs are three or four-digit numerical codes that categorize the industries that companies belong to based on their business activities. The three **most represented** sectors in this dataset are **Pharmaceutical Preparations** ({top_sector1}), **Real Estate Investment Trusts** ({top_sector2}), and **Blank Checks** ({top_sector3}).")
+st.markdown(f"SICs are three or four-digit numerical codes that categorize the industries that companies belong to based on their business activities. The three **most represented** sectors were **Pharmaceutical Preparations** ({top_sector1}), **Real Estate Investment Trusts** ({top_sector2}), and **Blank Checks** ({top_sector3}).")
 ## ____________________________________________________________________________________
 ## required detail reporting
 
@@ -154,7 +154,7 @@ required_detail_donut = px.pie(
 # plot donut chart
 st.plotly_chart(required_detail_donut)
 # add context
-st.markdown(f"A submission “at Required Detail Level” includes detailed quantitative disclosures in its footnotes and schedules. For example, rather than a total expense figure, it breaks down amounts into categories like compensation, accounting fees, and legal fees. Most submissions **do not** meet this level of detail ({(not_detail / (not_detail + detail) * 100):.1f}%).")
+st.markdown(f"A submission “at Required Detail Level” includes detailed quantitative disclosures in its footnotes and schedules. For example, rather than a total expense figure, it breaks down amounts into categories like compensation, accounting fees, and legal fees. Most submissions **did not** meet this level of detail ({(not_detail / (not_detail + detail) * 100):.1f}%).")
 
 ## ____________________________________________________________________________________
 ## user-selected metric visualizations
@@ -207,6 +207,10 @@ with st.container(border=True):
     col9, col10 = st.columns(2)
     col9.plotly_chart(histogram)
     col10.plotly_chart(reporting_donut)
+
+    # add context
+    col9.markdown(f"The distribution of {metric} is **right-skewed** with a median of **\${data[metric].median():,.0f}**. Most {metric} fell in the range of **\${data[metric].quantile(0.25):,.0f} -\${data[metric].quantile(0.75):,.0f}**.")
+    col10.markdown(f"Most companies **did not** report {metric} ({(not_reporting / (not_reporting + reporting) * 100):.1f}%). This could suggest **incomplete** and/or **inconsistent** philanthropic reports.")
 
     # aggregate metric count by state
     state_totals = data.groupby("State")[metric].agg(Sum="sum", Count="count").reset_index()
