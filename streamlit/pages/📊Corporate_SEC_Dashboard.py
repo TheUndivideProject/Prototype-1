@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from us import states
+from geopy.geocoders import Nominatim   
 
 # page configuration
 st.set_page_config(
@@ -162,16 +163,28 @@ st.markdown(f"A submission “at Required Detail Level” includes detailed quan
 # title for the section
 st.header("What Does the Data Reveal About Spending on Environmental and Social Justice Causes?")
 
-# create a dropdown menu
-metric = st.selectbox(
+col9, col10 = st.columns(2)
+# create a dropdown menu for metrics
+metric = col9.selectbox(
     "Select a metric:",
     ("Accrual for Environmental Loss Contingencies", "Environmental Remediation Expenses", "Charitable Contributions"),
+)
+reporting_states = list(data[data[metric].notna()]['State'].unique())
+
+# create the dropdown menu for states
+state = col10.selectbox(
+    "Select a state (or \"None\" to see data for the entire U.S.):", 
+    (["None"] + sorted(reporting_states))
 )
 
 with st.container(border=True):
 
-    st.subheader(metric)
-
+    if state != "None":
+        data = data[data['State'] == state]
+        st.subheader(f"{metric} in {states.lookup(state).name}")
+    else:
+        st.subheader(metric)
+    
     # add context
     if metric == 'Accrual for Environmental Loss Contingencies':
         st.markdown("This refers to *unspent* funds set aside for potential *future* environmental damages.")
@@ -204,26 +217,61 @@ with st.container(border=True):
     )
 
     # plot distribution and donut chart
-    col9, col10 = st.columns(2)
-    col9.plotly_chart(histogram)
-    col10.plotly_chart(reporting_donut)
+    col11, col12 = st.columns(2)
+    col11.plotly_chart(histogram)
+    col12.plotly_chart(reporting_donut)
 
     # add context
-    col9.markdown(f"The distribution of {metric} is **right-skewed** with a median of **\${data[metric].median():,.0f}**. Most {metric} fell in the range of **\${data[metric].quantile(0.25):,.0f} -\${data[metric].quantile(0.75):,.0f}**.")
-    col10.markdown(f"Most companies **did not** report {metric} ({(not_reporting / (not_reporting + reporting) * 100):.1f}%). This could suggest **incomplete** and/or **inconsistent** philanthropic reports.")
+    col11.markdown(f"The distribution of {metric} is **right-skewed** with a median of **\${data[metric].median():,.0f}**. Most {metric} fell in the range of **\${data[metric].quantile(0.25):,.0f} -\${data[metric].quantile(0.75):,.0f}**.")
+    col12.markdown(f"Most companies **did not** report {metric} ({(not_reporting / (not_reporting + reporting) * 100):.1f}%). This could suggest **incomplete** and/or **inconsistent** philanthropic reports.")
 
-    # aggregate metric count by state
-    state_totals = data.groupby("State")[metric].agg(Sum="sum", Count="count").reset_index()
-    state_totals.columns = ["State", f"Total {metric}", "Number of Companies Reporting"]
+    if state != 'None':
+        state_coordinates = pd.read_csv("data/state-coordinates.csv")
 
-    # create a heatmap
-    state_totals_choropleth = px.choropleth(state_totals, locations="State", locationmode="USA-states", scope="usa", color=f"Total {metric}", title=f"Total {metric} by State", 
-    hover_data={
-        "State": True, 
-        f"Total {metric}": True, 
-        "Number of Companies Reporting": True
-    }
-)
-    # plot heatmap
-    state_totals_choropleth.update_traces(marker_line_color='#FFFFFF')
-    st.plotly_chart(state_totals_choropleth)
+        state_data = state_coordinates[state_coordinates['State'] == state]
+        lat = state_data['Latitude'].values[0]
+        lon = state_data['Longitude'].values[0]
+
+        reporting_scatterplot = px.scatter_geo(
+        data[data[metric].notna()], 
+        lat='Latitude',
+        lon='Longitude',
+        hover_name='Name',
+        hover_data={
+            "Latitude": False,
+            "Longitude": False,
+            "Address": True,
+            "City": True,
+            metric: True
+        }
+        )
+
+        reporting_scatterplot.update_layout(
+            title=f'Companies Reporting {metric}',
+            geo=dict(
+                scope='usa',
+                center=dict(lat=lat, lon=lon),
+                visible=True, 
+                projection_scale=5
+                )
+            )
+        
+        reporting_scatterplot.update_traces(
+            marker=dict(size=20,)
+            )
+        st.plotly_chart(reporting_scatterplot)
+    else:
+        # aggregate metric count by state
+        state_totals = data.groupby("State")[metric].agg(Sum="sum", Count="count").reset_index()
+        state_totals.columns = ["State", f"Total {metric}", "Number of Companies Reporting"]
+        # create a heatmap
+        state_totals_choropleth = px.choropleth(state_totals, locations="State", locationmode="USA-states", scope="usa", color=f"Total {metric}", title=f"Total {metric} by State", 
+        hover_data={
+            "State": True, 
+            f"Total {metric}": True, 
+            "Number of Companies Reporting": True
+        }
+    )
+        # plot heatmap
+        state_totals_choropleth.update_traces(marker_line_color='#FFFFFF')
+        st.plotly_chart(state_totals_choropleth)
