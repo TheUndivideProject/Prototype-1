@@ -94,7 +94,7 @@ def compute_summary_stats():
 
 
 # Title
-st.subtitle("🌱 Environmental Nonprofits Giving (2023)")
+st.title("🌱 Environmental Nonprofits Giving (2023)")
 
 # Compute stats
 summary_stats = compute_summary_stats()
@@ -180,27 +180,35 @@ st.plotly_chart(fig_bottom)
 
 
 
+### State Choropleth
+# Aggregate total revenue by state
+state_funding = df_bmf.groupby('STATE')['REVENUE_AMT'].sum().reset_index()
+state_funding.columns = ['State', 'Total Revenue']
+
+# Create a heatmap
+fig = px.choropleth(state_funding, 
+                    locations='State', 
+                    locationmode='USA-states', 
+                    color='Total Revenue',
+                    color_continuous_scale='Viridis',
+                    scope='usa',
+                    title='Funding Distribution Across States')
+st.plotly_chart(fig)
+
+
+# # Create a pie chart
+# fig = px.pie(compliance_status, 
+#              names='Compliance Status', 
+#              values='Count',
+#              title='Compliance Status of Nonprofits')
+# st.plotly_chart(fig)
+
+
 # # Page Title
 # st.title("Nonprofit IRS Form 990 Data Dashboard")
 # st.markdown("""
 # Explore nonprofit financial and operational data from IRS Form 990 filings.
 # """)
-
-
-# ### State Choropleth
-# # Aggregate total revenue by state
-# state_funding = data.groupby('STATE')['REVENUE_AMT'].sum().reset_index()
-# state_funding.columns = ['State', 'Total Revenue']
-
-# # Create a heatmap
-# fig = px.choropleth(state_funding, 
-#                     locations='State', 
-#                     locationmode='USA-states', 
-#                     color='Total Revenue',
-#                     color_continuous_scale='Viridis',
-#                     scope='usa',
-#                     title='Funding Distribution Across States')
-# st.plotly_chart(fig)
 
 
 # # Aggregate funding by NTEE_CD
@@ -211,12 +219,7 @@ st.plotly_chart(fig_bottom)
 # compliance_status = data['FILING_REQ_CD'].value_counts().reset_index()
 # compliance_status.columns = ['Compliance Status', 'Count']
 
-# # Create a pie chart
-# fig = px.pie(compliance_status, 
-#              names='Compliance Status', 
-#              values='Count',
-#              title='Compliance Status of Nonprofits')
-# st.plotly_chart(fig)
+
 
 
 # # # Generate points map for nonprofits
