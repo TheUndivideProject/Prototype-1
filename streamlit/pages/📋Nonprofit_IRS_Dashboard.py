@@ -27,11 +27,19 @@ Explore nonprofit financial and operational data from IRS Form 990 filings.
 def load_data(filepath):
     return pd.read_csv(filepath, low_memory=False)
 
-# Define the path to the dataset
-data_path = "../data/Updated Regional Giving Data IRS eo1.csv"
+# Define dataset paths
+file_paths_sample = {
+    "EOBMF": "../data/Updated Regional Giving Data IRS eo1.csv",
+    "Form990": "../data/23eoextract990.csv",
+    "Form990PF": "../data/23eoextract990pf.csv",
+    "Form990EZ": "../data/23eoextractez.csv"  # Assuming this is the sample version
+}
 
-# Load the data
-df_bmf = load_data(data_path)
+# Read datasets
+df_bmf = load_data(file_paths_sample["EOBMF"])
+df_990 = load_data(file_paths_sample["Form990"])
+df_990pf = load_data(file_paths_sample["Form990PF"])
+df_990ez = load_data(file_paths_sample["Form990EZ"])
 
 
 ###################################
