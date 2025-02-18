@@ -94,7 +94,7 @@ def compute_summary_stats():
 
 
 # Title
-st.title("🌱 Environmental Nonprofits Giving (2023)")
+st.subtitle("🌱 Environmental Nonprofits Giving (2023)")
 
 # Compute stats
 summary_stats = compute_summary_stats()
