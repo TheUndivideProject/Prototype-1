@@ -123,7 +123,37 @@ with st.expander("📊 View Detailed Statistics"):
 # }).set_index("Metric"))
 
 
+###################################
+#      ABOUT THE DATA             #
+###################################
 
+with st.expander("📖 About the Data"):
+    st.markdown(
+        """
+        ## 🗂 Data Sources & Importance
+        This dashboard integrates multiple IRS datasets to analyze nonprofit financials, focusing on environmental organizations.
+        
+        **1️⃣ Exempt Organizations Business Master File (EOBMF)**  
+        - **What it is**: A dataset containing registered nonprofit organizations.  
+        - **Why it matters**: Helps identify which nonprofits are active and under what classification.  
+        - **More Info**: [IRS EOBMF](https://www.irs.gov/charities-non-profits/exempt-organizations-business-master-file-extract-eo-bmf)
+        
+        **2️⃣ Form 990 Filings**  
+        - **What it is**: Detailed financial reports submitted by nonprofits to the IRS.  
+        - **Why it matters**: Provides insights into revenue, expenses, program spending, and governance.  
+        - **More Info**: [IRS Form 990 Overview](https://www.irs.gov/forms-pubs/about-form-990)
+        
+        **3️⃣ Form 990-PF (Private Foundations)**  
+        - **What it is**: A version of Form 990 specifically for private foundations.  
+        - **Why it matters**: Shows how foundations distribute grants and manage their endowments.  
+        - **More Info**: [IRS Form 990-PF](https://www.irs.gov/forms-pubs/about-form-990-pf)
+        
+        **4️⃣ Form 990-EZ**  
+        - **What it is**: A simplified Form 990 for smaller nonprofits.  
+        - **Why it matters**: Allows analysis of smaller nonprofits that may not file full 990s.  
+        - **More Info**: [IRS Form 990-EZ](https://www.irs.gov/forms-pubs/about-form-990-ez)
+        """
+    )
 
 
 ###################################
@@ -322,23 +352,23 @@ st.pyplot(plt)
 # st.plotly_chart(fig_states)
 
 
-# ### Visualization 2: Revenue
-# # Revenue Distribution
-# fig_revenue = px.histogram(data, 
-#                            x='REVENUE_AMT', 
-#                            nbins=50, 
-#                            title='Distribution of Revenue Among Nonprofits',
-#                            labels={'REVENUE_AMT': 'Revenue Amount'},
-#                            log_y=True)
+### Revenue Visualization
+# Revenue Distribution
+fig_revenue = px.histogram(df_bmf, 
+                           x='REVENUE_AMT', 
+                           nbins=50, 
+                           title='Distribution of Revenue Among Nonprofits',
+                           labels={'REVENUE_AMT': 'Revenue Amount'},
+                           log_y=True)
 
-# fig_revenue.update_layout(xaxis_title='Revenue Amount (USD)', 
-#                           yaxis_title='Frequency (Log Scale)',
-#                           hovermode='x')
+fig_revenue.update_layout(xaxis_title='Revenue Amount (USD)', 
+                          yaxis_title='Frequency (Log Scale)',
+                          hovermode='x')
 
-# st.plotly_chart(fig_revenue)
+st.plotly_chart(fig_revenue)
 
-# # Add context
-# st.markdown("**Note**: Most nonprofits have lower revenue, but there are some high-revenue outliers that significantly impact the overall distribution.")
+# Add context
+st.markdown("**Note**: Most nonprofits have lower revenue, but there are some high-revenue outliers that significantly impact the overall distribution.")
 
 
 # # Top Sectors by Activity Code
