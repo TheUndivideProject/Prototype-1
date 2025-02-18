@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import pandas as pd
 import plotly.express as px
+import networkx as nx
 # import pydeck as pdk
 
 # Page configuration
@@ -124,6 +125,7 @@ with st.expander("📊 View Detailed Statistics"):
 
 
 
+
 ###################################
 #        SPECIFIC CHARTS          #
 ###################################
@@ -179,6 +181,48 @@ st.plotly_chart(fig_bottom)
 
 
 
+###################################
+#        FINANCIAL HEALTH         #
+###################################
+st.header("📊 Financial Transparency & Health")
+
+# Sidebar Filters
+st.sidebar.header("🔍 Filter Options")
+nonprofit_size = st.sidebar.radio("Select Nonprofit Size:", ["Small (<$1M)", "Medium ($1M-$10M)", "Large (>$10M)"])
+
+if nonprofit_size == "Small (<$1M)":
+    df_filtered = df_env_990[df_env_990["totassetsend"] < 1_000_000]
+elif nonprofit_size == "Medium ($1M-$10M)":
+    df_filtered = df_env_990[(df_env_990["totassetsend"] >= 1_000_000) & (df_env_990["totassetsend"] <= 10_000_000)]
+else:
+    df_filtered = df_env_990[df_env_990["totassetsend"] > 10_000_000]
+
+# Interactive Boxplot for Program vs. Admin Spending
+fig_box = px.box(df_filtered, y=["totfuncexpns", "payrolltx"],
+                 labels={"value": "Dollars Spent", "variable": "Expense Type"},
+                 title=f"Program vs. Admin Expenses - {nonprofit_size}",
+                 template="plotly_dark")
+st.plotly_chart(fig_box)
+
+# Interactive Histogram of Executive Compensation
+fig_hist = px.histogram(df_filtered, x="payrolltx", nbins=30,
+                        title="Distribution of Executive Compensation",
+                        labels={"payrolltx": "Executive Compensation ($)"},
+                        template="plotly_dark")
+st.plotly_chart(fig_hist)
+
+# Financial Red Flags Dashboard
+df_red_flags = df_filtered[df_filtered["totfuncexpns"] / df_filtered["totrevenue"] < 0.5]
+st.subheader("⚠️ Financial Red Flags: Nonprofits Spending <50% on Programs")
+
+if not df_red_flags.empty:
+    fig_redflags = px.bar(df_red_flags, x="ein", y="totfuncexpns",
+                          title="Nonprofits Spending <50% on Programs",
+                          labels={"ein": "EIN", "totfuncexpns": "Total Functional Expenses"},
+                          color="totfuncexpns", template="plotly_dark")
+    st.plotly_chart(fig_redflags)
+else:
+    st.markdown("✅ No nonprofits flagged under this criteria.")
 
 ### State Choropleth
 # Aggregate total revenue by state
@@ -195,6 +239,30 @@ fig = px.choropleth(state_funding,
                     title='Funding Distribution Across States')
 st.plotly_chart(fig)
 
+
+
+
+
+st.header("💰 Funding Flow & Sources")
+
+# Top Donors Leaderboard
+if "NAME" in df_env_990pf.columns:
+    top_donors = df_env_990pf.groupby("NAME")["FAIRMRKTVALAMT"].sum().nlargest(10).reset_index()
+else:
+    top_donors = df_env_990pf.groupby("EIN")["FAIRMRKTVALAMT"].sum().nlargest(10).reset_index()
+    top_donors.rename(columns={"EIN": "Donor"}, inplace=True)
+
+st.dataframe(top_donors, width=800)
+
+# Network Graph
+graph = nx.Graph()
+for _, row in df_env_990pf.iterrows():
+    donor_name = row["NAME"] if "NAME" in df_env_990pf.columns else row["EIN"]
+    graph.add_edge(donor_name, row["EIN"], weight=row["FAIRMRKTVALAMT"])
+
+plt.figure(figsize=(10, 6))
+nx.draw(graph, with_labels=True, node_size=20, font_size=8)
+st.pyplot(plt)
 
 # # Create a pie chart
 # fig = px.pie(compliance_status, 
