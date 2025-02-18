@@ -42,6 +42,8 @@ df_990pf = load_data(file_paths_sample["Form990PF"])
 df_990ez = load_data(file_paths_sample["Form990EZ"])
 
 
+
+
 ###################################
 #      SUMMARY STATISTICS         #
 ###################################
@@ -118,7 +120,7 @@ st.bar_chart(pd.DataFrame({
 
 ### Top Reporting
 # Aggregate revenue by state
-state_funding = data.groupby('STATE')['REVENUE_AMT'].sum().reset_index()
+state_funding = df_bmf.groupby('STATE')['REVENUE_AMT'].sum().reset_index()
 state_funding.columns = ['State', 'Total Revenue']
 
 # Sort data to get top 10 and bottom 10 states
