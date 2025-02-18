@@ -41,6 +41,22 @@ df_990 = load_data(file_paths_sample["Form990"])
 df_990pf = load_data(file_paths_sample["Form990PF"])
 df_990ez = load_data(file_paths_sample["Form990EZ"])
 
+# Filter the BMF dataset for environmental nonprofits using NTEE codes (C30-C60)
+env_ntee_codes = [f"C{i}" for i in range(30, 61)]
+df_env_bmf = df_bmf[df_bmf["NTEE_CD"].astype(str).str.startswith(tuple(env_ntee_codes), na=False)]
+
+# Extract relevant EINs
+env_eins = set(df_env_bmf["EIN"].astype(str))
+
+# Filter Form 990 datasets to include only environmental nonprofits (matching EINs)
+df_env_990 = df_990[df_990["ein"].astype(str).isin(env_eins)]
+df_env_990ez = df_990ez[df_990ez["EIN"].astype(str).isin(env_eins)]
+df_env_990pf = df_990pf[df_990pf["EIN"].astype(str).isin(env_eins)]
+
+# Ensure financial columns are numeric
+df_env_990["totassetsend"] = pd.to_numeric(df_env_990["totassetsend"], errors="coerce")
+df_env_990ez["totassetsend"] = pd.to_numeric(df_env_990ez["totassetsend"], errors="coerce")
+df_env_990pf["FAIRMRKTVALAMT"] = pd.to_numeric(df_env_990pf["FAIRMRKTVALAMT"], errors="coerce")
 
 
 
