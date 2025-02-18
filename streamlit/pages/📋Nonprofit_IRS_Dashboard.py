@@ -11,13 +11,6 @@ st.set_page_config(
     layout="wide",
 )
 
-
-# Page Title
-st.title("Nonprofit IRS Form 990 Data Dashboard")
-st.markdown("""
-Explore nonprofit financial and operational data from IRS Form 990 filings.
-""")
-
 ###################################
 #       LOADING THE DATA          #
 ###################################
@@ -99,7 +92,9 @@ def compute_summary_stats():
         "Large Nonprofits (>$10M)": large_nonprofits,
     }
 
-st.title("🌱 Environmental Nonprofits Overview (2023)")
+
+# Title
+st.title("🌱 Environmental Nonprofits Giving (2023)")
 
 # Compute stats
 summary_stats = compute_summary_stats()
@@ -108,7 +103,7 @@ summary_stats = compute_summary_stats()
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.metric(label="Total Nonprofits", value=f"{summary_stats['Total Environmental Nonprofits']:,}")
+    st.metric(label="Total Environment Nonprofits", value=f"{summary_stats['Total Environmental Nonprofits']:,}")
 
 with col2:
     st.metric(label="Total Revenue ($)", value=f"${summary_stats['Total Revenue ($)']:,.2f}")
@@ -120,11 +115,11 @@ with col3:
 with st.expander("📊 View Detailed Statistics"):
     st.dataframe(pd.DataFrame(summary_stats.items(), columns=["Metric", "Value"]))
 
-# Optional: Visualization of revenue/assets/expenses
-st.bar_chart(pd.DataFrame({
-    "Metric": ["Total Revenue ($)", "Total Assets ($)", "Total Expenses ($)"],
-    "Value": [summary_stats["Total Revenue ($)"], summary_stats["Total Assets ($)"], summary_stats["Total Expenses ($)"]]
-}).set_index("Metric"))
+# # Optional: Visualization of revenue/assets/expenses
+# st.bar_chart(pd.DataFrame({
+#     "Metric": ["Total Revenue ($)", "Total Assets ($)", "Total Expenses ($)"],
+#     "Value": [summary_stats["Total Revenue ($)"], summary_stats["Total Assets ($)"], summary_stats["Total Expenses ($)"]]
+# }).set_index("Metric"))
 
 
 
@@ -185,6 +180,11 @@ st.plotly_chart(fig_bottom)
 
 
 
+# # Page Title
+# st.title("Nonprofit IRS Form 990 Data Dashboard")
+# st.markdown("""
+# Explore nonprofit financial and operational data from IRS Form 990 filings.
+# """)
 
 
 # ### State Choropleth
