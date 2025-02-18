@@ -79,7 +79,9 @@ st.sidebar.markdown(
 # st.sidebar.markdown("Select a page to view:")
 # page = st.sidebar.radio("Pages", ["Corporate SEC Dashboard", "Nonprofit IRS Dashboard"])
 
-
+# # Add Sidebar image and Text
+# STCimage, UNICEFimage, DSAimage, NOAAimage = read_logos("src/Pictures")
+# st.sidebar.image(STCimage)
 
 
 # # Load selected page
