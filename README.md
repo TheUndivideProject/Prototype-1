@@ -7,9 +7,7 @@ Transparency is our number one goal. Although current data is accessible via the
 
 Thus, our objective is to reestablish this feedback loop between communities and philanthropic giving officers, ensuring that the perspectives and leadership of community members are at the forefront of all funding decisions.
 
-This will start as comparative analysis of Corporations and Nonprofits. This will be done through documents provided by the Securities and Exchange Commission (SEC) and the IRS (through their Business Master File and Form 990s). *More information on these will be provided in their respective analyses*. As a result, it will lay the foundation for trend analysis, and where we project this giving to be in the future.
-
-Utlimately, this will operate as a multi-faceted tool that combines education, transparency, and decision-making. Through the education of communities at large, we can find accoutnability and decision-making for government agencies involved not only to make sure impacted communities are served, but to hold those accountable for their philanthropic giving. This innovative dashboard will serve as a convenient platform for direct verification of funding impacts, empowering communities to track and assess the resources flowing into their areas.
+This will start as comparative analysis of Corporations and Nonprofits. This will be done through documents provided by the Securities and Exchange Commission (SEC) and the IRS (through their Business Master File and Form 990s).
 
 ## Folder Structure
 - `streamlit/`: Contains all Streamlit app components.
