@@ -12,12 +12,13 @@ This will start as comparative analysis of Corporations and Nonprofits. This wil
 Utlimately, this will operate as a multi-faceted tool that combines education, transparency, and decision-making. Through the education of communities at large, we can find accoutnability and decision-making for government agencies involved not only to make sure impacted communities are served, but to hold those accountable for their philanthropic giving. This innovative dashboard will serve as a convenient platform for direct verification of funding impacts, empowering communities to track and assess the resources flowing into their areas.
 
 ## Folder Structure
-- 'streamlit/': Contains all Streamlit app components.
-  - 'data/': CSV files containing the data used for the dashboard's visualizations (see details under 'Data')
-  - 'pages/': 
-    - '📊Corporate_SEC_Dashboard.py/': Documents insights from financial and philanthropic metrics from the Securities and Exchange Commission (SEC) financial statements of public companies.
-    - '📋Nonprofit_IRS_Dashboard.py/': Documents insights from financial and philanthropic metrics from the IRS Exempt Organizations Business Master File and Form 990 filings of tax-exempt organizations.
-  - 'Home.py': Main landing page of the Streamlit app, providing a brief introduction to SEED and the goals of each dashboard.
+- `streamlit/`: Contains all Streamlit app components.
+  - `data/`: CSV files containing the data used for the dashboard's visualizations (see details under **Data**).
+  - `pages/`:  
+    - `📊 Corporate_SEC_Dashboard.py`: Documents insights from financial and philanthropic metrics from the Securities and Exchange Commission (SEC) financial statements of public companies.  
+    - `📋 Nonprofit_IRS_Dashboard.py`: Documents insights from financial and philanthropic metrics from the IRS Exempt Organizations Business Master File and Form 990 filings of tax-exempt organizations.  
+  - `Home.py`: Main landing page of the Streamlit app, providing a brief introduction to SEED and the goals of each dashboard.  
+
  
 ## Getting Started
 1. Clone the repo.
