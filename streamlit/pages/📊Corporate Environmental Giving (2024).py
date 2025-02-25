@@ -6,7 +6,7 @@ from us import states
 
 # configure the page
 st.set_page_config(
-    page_title="Corporate SEC Data Dashboard",
+    page_title="Corporate Environmental Giving (2024)",
     layout="wide"
 )
 
@@ -17,12 +17,7 @@ def load_data():
 data = load_data()
 
 # set the title that appears at the top of the page
-st.title("📊 Corporate SEC Data Dashboard")
-st.write("Explore corporate financial and operational data from financial statements (Form 10-Ks, Form 10-Qs, Earnings Releases, Form 8-Ks, etc.) filed with the U.S. Securities and Exchange Commission (SEC) in 2024. You can access the raw data on the SEC’s website: https://www.sec.gov/data-research/sec-markets-data/financial-statement-notes-data-sets.")
-
-# add some spacing
-""
-""
+st.title("📊 Corporate Environmental Giving (2024)")
 
 # set the title for the first section
 st.header("Who's Represented in the Data?")
