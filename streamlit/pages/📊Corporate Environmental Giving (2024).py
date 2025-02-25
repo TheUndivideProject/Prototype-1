@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 from scipy.stats import skew
+from Home import read_logos
 from us import states
 
 # configure the page
@@ -259,3 +260,9 @@ else:
     metric_state_totals_context = f"**{top_metric_state_total1}**, **{top_metric_state_total2}**, and **{top_metric_state_total3}** were the three states with the **greatest** {metric}, while **{bottom_metric_state_total1}**, **{bottom_metric_state_total2}**, and **{bottom_metric_state_total3}** were the three states with the **smallest** {metric}."
 
     plot_charts(1, [metric_state_totals_choropleth], [metric_state_totals_context])
+
+
+
+   # Add logo to sidebar
+TUPLogo = read_logos("pictures")
+st.sidebar.image(TUPLogo) 

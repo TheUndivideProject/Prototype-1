@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import plotly.express as px
 import networkx as nx
+from Home import read_logos
 # import pydeck as pdk
 
 # Page configuration
@@ -401,5 +402,7 @@ st.markdown("**Note**: Most nonprofits have lower revenue, but there are some hi
 #     irs_data[metric].hist(bins=20, ax=ax)
 #     st.pyplot(fig)
 
-
+# Add logo to sidebar
+TUPLogo = read_logos("pictures")
+st.sidebar.image(TUPLogo)
 
