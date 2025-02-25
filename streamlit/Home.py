@@ -1,5 +1,6 @@
 import streamlit as st
 import matplotlib.pyplot as plt
+from PIL import Image
 
 # Set up page configuration
 st.set_page_config(
@@ -89,3 +90,27 @@ st.sidebar.markdown(
 #     st.experimental_rerun()  # Redirect to the Corporate SEC page
 # elif page == "Nonprofit IRS Dashboard":
 #     st.experimental_rerun()  # Redirect to the Nonprofit IRS page
+def read_logos(logos_path):
+    """
+    Reads and returns the TUP logos from the provided path.
+
+    Parameters:
+    -----------
+    logos_path : str
+        The path to the directory containing the logo images.
+
+    Returns:
+    --------
+    tuple of PIL.Image.Image
+        The STC, UNICEF, and DSA logos as PIL Image objects.
+    """
+    TUPLogo = Image.open(f"{logos_path}/TUP_logo.png")
+
+    return TUPLogo
+
+
+TUPLogo = read_logos("pictures")
+st.sidebar.image(TUPLogo)
+
+
+
