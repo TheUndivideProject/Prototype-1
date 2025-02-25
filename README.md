@@ -11,7 +11,7 @@ This will start as comparative analysis of Corporations and Nonprofits. This wil
 
 ## Folder Structure
 - `streamlit/`: Contains all Streamlit app components.
-  - `data/`: CSV files containing the data used for the dashboard's visualizations (see details under **Data**).
+  - `data/`: CSV files containing the data used for the dashboard's visualizations (see details under **About the Data**).
   - `pages/`:  
     - `📊 Corporate_SEC_Dashboard.py`: Documents insights from financial and philanthropic metrics from the Securities and Exchange Commission (SEC) financial statements of public companies.  
     - `📋 Nonprofit_IRS_Dashboard.py`: Documents insights from financial and philanthropic metrics from the IRS Exempt Organizations Business Master File and Form 990 filings of tax-exempt organizations.  
