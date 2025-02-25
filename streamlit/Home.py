@@ -80,16 +80,6 @@ st.sidebar.markdown(
 # st.sidebar.markdown("Select a page to view:")
 # page = st.sidebar.radio("Pages", ["Corporate SEC Dashboard", "Nonprofit IRS Dashboard"])
 
-# # Add Sidebar image and Text
-# STCimage, UNICEFimage, DSAimage, NOAAimage = read_logos("src/Pictures")
-# st.sidebar.image(STCimage)
-
-
-# # Load selected page
-# if page == "Corporate SEC Dashboard":
-#     st.experimental_rerun()  # Redirect to the Corporate SEC page
-# elif page == "Nonprofit IRS Dashboard":
-#     st.experimental_rerun()  # Redirect to the Nonprofit IRS page
 def read_logos(logos_path):
     """
     Reads and returns the TUP logos from the provided path.
