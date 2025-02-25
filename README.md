@@ -41,32 +41,32 @@ This will start as comparative analysis of Corporations and Nonprofits. This wil
 **1️⃣ Exempt Organizations Business Master File (EOBMF)**  
 - **What it is**: A dataset containing registered nonprofit organizations.  
 - **Why it matters**: Helps identify which nonprofits are active and under what classification.  
-- **More Info**: [IRS EOBMF](https://www.irs.gov/charities-non-profits/exempt-organizations-business-master-file-extract-eo-bmf)
+- **More info**: [IRS EOBMF](https://www.irs.gov/charities-non-profits/exempt-organizations-business-master-file-extract-eo-bmf)
 
 **2️⃣ Form 990 Filings**  
 - **What it is**: Detailed financial reports submitted by nonprofits to the IRS.  
 - **Why it matters**: Provides insights into revenue, expenses, program spending, and governance.  
-- **More Info**: [IRS Form 990 Overview](https://www.irs.gov/forms-pubs/about-form-990)
+- **More info**: [IRS Form 990 Overview](https://www.irs.gov/forms-pubs/about-form-990)
 
 **3️⃣ Form 990-PF (Private Foundations)**  
 - **What it is**: A version of Form 990 specifically for private foundations.  
 - **Why it matters**: Shows how foundations distribute grants and manage their endowments.  
-- **More Info**: [IRS Form 990-PF](https://www.irs.gov/forms-pubs/about-form-990-pf)
+- **More info**: [IRS Form 990-PF](https://www.irs.gov/forms-pubs/about-form-990-pf)
 
 **4️⃣ Form 990-EZ**  
 - **What it is**: A simplified Form 990 for smaller nonprofits.  
 - **Why it matters**: Allows analysis of smaller nonprofits that may not file full 990s.  
-- **More Info**: [IRS Form 990-EZ](https://www.irs.gov/forms-pubs/about-form-990-ez)
+- **More info**: [IRS Form 990-EZ](https://www.irs.gov/forms-pubs/about-form-990-ez)
 
 ### SEC Corporate Data  
 
 **1️⃣ Financial Statement and Notes Submission Data Set**  
 - **What it is**: A dataset containing all SEC-registered companies.  
 - **Why it matters**: Provides insights into active companies, their locations, and the level of detail in their financial reports.  
-- **More Info**: [SEC Financial Statement and Notes Data Sets](https://www.sec.gov/data-research/sec-markets-data/financial-statement-notes-data-sets)
+- **More info**: [SEC Financial Statement and Notes Data Sets](https://www.sec.gov/data-research/sec-markets-data/financial-statement-notes-data-sets)
 
 **2️⃣ Financial Statement and Notes Numeric Data Set**  
 - **What it is**: A dataset containing numeric data from SEC-registered companies' filings, including detailed figures from financial statements and notes.  
 - **Why it matters**: Provides insights into revenue, environmental loss contingencies, and charitable contributions.  
-- **More Info**: [SEC Financial Statement and Notes Data Sets](https://www.sec.gov/data-research/sec-markets-data/financial-statement-notes-data-sets)
+- **More info**: [SEC Financial Statement and Notes Data Sets](https://www.sec.gov/data-research/sec-markets-data/financial-statement-notes-data-sets)
 
