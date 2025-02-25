@@ -42,6 +42,28 @@ present_metrics(3,
                 [data["Date of Filing"].min(), data["Date of Filing"].max(), f"${data['Gross Profit'].median():,.0f}"]
                 )
 
+# add about the data accordion
+with st.expander("📖 About the Data"):
+    st.markdown(
+        """
+        ## 🗂 Data Sources & Importance
+        This dashboard tracks corporate spending on environmental and social justice causes using information from all financial statements (Form 10-Ks, Form 10-Qs, Earnings Releases, Form 8-Ks, etc.) filed with the SEC in 2024.
+        
+        **1️⃣ Financial Statement and Notes Submission Data Set**  
+        - **What it is**: A dataset containing all SEC-registered companies.
+        - **Why it matters**: Provides insights into active companies, their locations, and the level of detail in their financial reports.
+        - **More info**: [SEC Financial Statement and Notes Data Sets](https://www.sec.gov/data-research/sec-markets-data/financial-statement-notes-data-sets)
+        
+        **2️⃣ Financial Statement and Notes Numeric Data Set**  
+        - **What it is**: A dataset containing numeric data from SEC-registered companies' filings, including detailed figures from financial statements and notes.
+        - **Why it matters**: Provides insights into revenue, environmental loss contingencies, and charitable contributions.
+        - **More info**: [SEC Financial Statement and Notes Data Sets](https://www.sec.gov/data-research/sec-markets-data/financial-statement-notes-data-sets)
+        """
+    )
+
+
+
+
 # aggregate number of headquarters by state
 state_headquarter_counts = data["State"].value_counts().reset_index()
 state_headquarter_counts.columns = ["State", "Count"]
