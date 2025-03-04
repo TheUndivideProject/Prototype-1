@@ -279,17 +279,20 @@ with tabs[0]:
 with tabs[1]:
     st.header(":triangular_flag_on_post: Financial Transparency & Health")
 
-    # Sidebar Filters
-    st.sidebar.header("🔍 Filter Options")
-    nonprofit_size = st.sidebar.radio("Select Nonprofit Size:", ["Small (<$1M)", "Medium ($1M-$10M)", "Large (>$10M)"])
-
+    # Dropdown filter
+    nonprofit_size = st.selectbox("Select Nonprofit Size:", ["All", "Small (<$1M)", "Medium ($1M-10M)", "Large (>$10M)"])
+    
+    # Apply filtering
     if nonprofit_size == "Small (<$1M)":
         df_filtered = df_env_990[df_env_990["totassetsend"] < 1_000_000]
-    elif nonprofit_size == "Medium ($1M-$10M)":
-        df_filtered = df_env_990[(df_env_990["totassetsend"] >= 1_000_000) & (df_env_990["totassetsend"] <= 10_000_000)]
-    else:
+    elif nonprofit_size == "Medium ($1M-10M)":
+        df_filtered = df_env_990[(df_env_990["totassetsend"] >= 1_000_000) & (df_990["totassetsend"] <= 10_000_000)]
+    elif nonprofit_size == "Large (>$10M)":
         df_filtered = df_env_990[df_env_990["totassetsend"] > 10_000_000]
+    else:
+        df_filtered = df_env_990 
 
+  
     # Interactive Boxplot for Program vs. Admin Spending
     fig_box = px.box(df_filtered, y=["totfuncexpns", "payrolltx"],
                     labels={"value": "Dollars Spent", "variable": "Expense Type"},
