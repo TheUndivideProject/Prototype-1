@@ -12,11 +12,11 @@ st.set_page_config(
 # Title and Introducption
 st.title("🌱 SEED: Sustainability and Equity Environmental Dashboards")
 st.markdown("""
-Welcome to SEED, your one-stop platform for transparency and impact reporting. 
+Welcome to SEED, your one-stop platform for philanthropic giving reporting. 
 Choose from the dashboards to explore corporate SEC data and nonprofit IRS Form 990 data.
 """)
 
-st.header("About Us")
+st.header("About The Dashboard")
 
 st.markdown("""
             
@@ -24,7 +24,7 @@ This website aims to provide insights into philanthropic spending related to env
 
 Transparency is our number one goal. Although current data is accessible via the SEC and IRS, the breadth and depth of this data makes it extremely difficult for those at large without much data science experience to analyze accountability of how philanthropic giving operates in cities of interest and whether this philanthropic giving is reported. This guts the ideal of a feedback loop between the donors that are giving, and the impacted communities that are supposed to receive assistance.
 
-Thus, our objective is to reestablish this feedback loop between communities and philanthropic giving officers, ensuring that the perspectives and leadership of community members are at the forefront of all funding decisions.
+Thus, our objective is to re-establish this feedback loop between communities and philanthropic giving officers, ensuring that the perspectives and leadership of community members are at the forefront of all funding decisions.
 
 This will start as comparative analysis of Corporations and Nonprofits. This will be done through documents provided by the Securities and Exchange Commission (SEC) and the IRS (through their Business Master File and Form 990s). *More information on these will be provided in their respective analyses*. As a result, it will lay the foundation for trend analysis, and where we project this giving to be in the future.
 
@@ -51,56 +51,11 @@ st.markdown("Input some actionable insights from both of the dashboards together
 st.markdown("*Insert an about the data, logo, and TUP dropdown")
 
 
-# Side Bar Set Up
-st.sidebar.markdown(
-        """
-        <style>
-            [data-testid="stVerticalBlock"] > img:first-child {
-                margin-top: -60px;
-            }
-
-            [data-testid=stImage]{
-                text-align: center;
-                display: block;
-                margin-left: auto;
-                margin-right: auto;
-                width: 100%;
-            }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
 
 
 
 
-  
-# # Add Sidebar image and Text
-# st.sidebar.title("Navigation")
-# st.sidebar.markdown("Select a page to view:")
-# page = st.sidebar.radio("Pages", ["Corporate SEC Dashboard", "Nonprofit IRS Dashboard"])
-
-def read_logos(logos_path):
-    """
-    Reads and returns the TUP logos from the provided path.
-
-    Parameters:
-    -----------
-    logos_path : str
-        The path to the directory containing the logo images.
-
-    Returns:
-    --------
-    tuple of PIL.Image.Image
-        The STC, UNICEF, and DSA logos as PIL Image objects.
-    """
-    TUPLogo = Image.open(f"{logos_path}/TUP_logo.png")
-
-    return TUPLogo
-
-
-TUPLogo = read_logos("pictures")
+TUPLogo = Image.open(f"pictures/TUP_logo.png")
 st.sidebar.image(TUPLogo)
-
 
 
