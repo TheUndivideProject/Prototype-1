@@ -24,10 +24,10 @@ def load_data(filepath):
 
 # Define dataset paths
 file_paths_sample = {
-    "EOBMF": "../data/Updated Regional Giving Data IRS eo1.csv",
-    "Form990": "../data/23eoextract990.csv",
-    "Form990PF": "../data/23eoextract990pf.csv",
-    "Form990EZ": "../data/23eoextractez.csv"  # Assuming this is the sample version
+    "EOBMF": "data/Updated Regional Giving Data IRS eo1.csv",
+    "Form990": "data/23eoextract990.csv",
+    "Form990PF": "data/23eoextract990pf.csv",
+    "Form990EZ": "data/23eoextractez.csv"  # Assuming this is the sample version
 }
 
 # Read datasets
