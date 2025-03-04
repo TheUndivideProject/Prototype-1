@@ -119,18 +119,13 @@ with tabs[0]:
 
     with col2:
         st.metric(label="Total Revenue ($)", value=f"${summary_stats['Total Revenue ($)']:,.2f}",  border=True)
-        st.metric(label="Medium Nonprofits ($1M-$10M)", value=f"{summary_stats['Medium Nonprofits ($1M-$10M)']:,}", border=True)
+        st.metric(label="Medium Nonprofits (\$1M-\$10M)", value=f"{summary_stats['Medium Nonprofits ($1M-$10M)']:,}", border=True)
 
     with col3:
         st.metric(label="Total Assets ($)", value=f"${summary_stats['Total Assets ($)']:,.2f}", border=True)
         st.metric(label="Large Nonprofits (>$10M)", value=f"{summary_stats['Large Nonprofits (>$10M)']:,}", border=True)
 
 
-    # # Optional: Visualization of revenue/assets/expenses
-    # st.bar_chart(pd.DataFrame({
-    #     "Metric": ["Total Revenue ($)", "Total Assets ($)", "Total Expenses ($)"],
-    #     "Value": [summary_stats["Total Revenue ($)"], summary_stats["Total Assets ($)"], summary_stats["Total Expenses ($)"]]
-    # }).set_index("Metric"))
 
 
 ###################################
