@@ -370,28 +370,28 @@ with tabs[2]:
     st.header("💰 Funding Flow & Sources")
 
     # Top Donors Leaderboard
-    if "NAME" in df_env_990pf.columns:
-        top_donors = df_env_990pf.groupby("NAME")["FAIRMRKTVALAMT"].sum().nlargest(10).reset_index()
+    if "name" in df_env_990pf.columns:
+        top_donors = df_env_990pf.groupby("name")["FAIRMRKTVALAMT"].sum().nlargest(10).reset_index()
     else:
         top_donors = df_env_990pf.groupby("EIN")["FAIRMRKTVALAMT"].sum().nlargest(10).reset_index()
         top_donors.rename(columns={"EIN": "Donor"}, inplace=True)
 
     st.dataframe(top_donors, width=800)
 
-    # Aggregate donor-recipient funding
-    donor_funding = df_env_990pf.groupby("NAME")["FAIRMRKTVALAMT"].sum().nlargest(10).reset_index()
+    # # Aggregate donor-recipient funding
+    # donor_funding = df_env_990pf.groupby("name")["FAIRMRKTVALAMT"].sum().nlargest(10).reset_index()
     
-    # Sankey Diagram Data
-    sankey_data = dict(
-        source=list(range(len(donor_funding))),
-        target=[len(donor_funding) + i for i in range(len(donor_funding))],
-        value=donor_funding["FAIRMRKTVALAMT"].tolist()
-    )
+    # # Sankey Diagram Data
+    # sankey_data = dict(
+    #     source=list(range(len(donor_funding))),
+    #     target=[len(donor_funding) + i for i in range(len(donor_funding))],
+    #     value=donor_funding["FAIRMRKTVALAMT"].tolist()
+    # )
     
-    fig_sankey = px.sankey(node=dict(label=list(donor_funding["NAME"]) + list(donor_funding["NAME"])), 
-                            link=sankey_data,
-                            title="Flow of Philanthropic Funds")
-    st.plotly_chart(fig_sankey)
+    # fig_sankey = px.sankey(node=dict(label=list(donor_funding["name"]) + list(donor_funding["name"])), 
+    #                         link=sankey_data,
+    #                         title="Flow of Philanthropic Funds")
+    # st.plotly_chart(fig_sankey)
 
 
 # # Top Sectors by Activity Code
