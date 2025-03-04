@@ -307,10 +307,31 @@ with tabs[1]:
                             template="plotly_dark")
     st.plotly_chart(fig_hist)
 
-    # Financial Red Flags Dashboard
-    df_red_flags = df_filtered[df_filtered["totfuncexpns"] / df_filtered["totrevenue"] < 0.5]
-    st.subheader("⚠️ Financial Red Flags: Nonprofits Spending <50% on Programs")
 
+    # Compute program vs. admin expenses
+    df_expenses = pd.DataFrame({
+        "Expense Type": ["Program Expenses", "Administrative Expenses"],
+        "Amount ($)": [df_filtered["totfuncexpns"].sum(), df_filtered["payrolltx"].sum()]
+    })
+    
+    fig_exp = px.pie(df_expenses, names="Expense Type", values="Amount ($)",
+                     title=f"Program vs. Admin Expenses ({nonprofit_size})")
+    st.plotly_chart(fig_exp)
+    
+    # Executive Compensation Distribution
+    fig_hist = px.histogram(df_filtered, x="payrolltx", nbins=30,
+                            title=f"Distribution of Executive Compensation ({nonprofit_size})",
+                            labels={"payrolltx": "Executive Compensation ($)"})
+    st.plotly_chart(fig_hist)
+    
+    # Financial Red Flags: Nonprofits spending <50% on programs
+    df_red_flags = df_filtered[df_filtered["totfuncexpns"] / df_filtered["totrevenue"] < 0.5]
+    st.subheader(f"⚠️ Financial Red Flags: Nonprofits Spending <50% on Programs ({nonprofit_size})")
+    
+    st.markdown(
+        "Nonprofits that spend less than 50% of their revenue on program expenses may indicate inefficiencies or potential governance concerns. "
+        "A high percentage of funds going towards administrative or other expenses instead of direct programs could be a red flag for donors, policymakers, and communities looking to assess nonprofit impact."
+    )
     if not df_red_flags.empty:
         fig_redflags = px.bar(df_red_flags, x="ein", y="totfuncexpns",
                             title="Nonprofits Spending <50% on Programs",
@@ -320,13 +341,14 @@ with tabs[1]:
     else:
         st.markdown("✅ No nonprofits flagged under this criteria.")
 
-
-# # Create a pie chart
-# fig = px.pie(compliance_status, 
-#              names='Compliance Status', 
-#              values='Count',
-#              title='Compliance Status of Nonprofits')
-# st.plotly_chart(fig)
+    st.header("Compliance Status")
+    # Compliance Status Pie Chart
+    compliance_status = df_filtered["FILING_REQ_CD"].value_counts().reset_index()
+    compliance_status.columns = ["Compliance Status", "Count"]
+    
+    fig_compliance = px.pie(compliance_status, names="Compliance Status", values="Count",
+                            title=f"Compliance Status of Nonprofits ({nonprofit_size})")
+    st.plotly_chart(fig_compliance)
 
 
 
