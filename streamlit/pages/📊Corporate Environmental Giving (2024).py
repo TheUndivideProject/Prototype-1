@@ -2,12 +2,15 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 from scipy.stats import skew
-from Home import read_logos
 from us import states
+from scipy.stats import skew
+import folium
+from folium import plugins
+from Home import read_logos
 
-# configure the page
+# configure page
 st.set_page_config(
-    page_title="Corporate Environmental Giving (2024)",
+    page_title="📊 Corporate Environmental Giving (2024)",
     layout="wide"
 )
 
@@ -17,28 +20,61 @@ def load_data():
     return pd.read_csv("data/financial-statement-and-notes-2024-modified.csv")
 data = load_data()
 
-# set the title that appears at the top of the page
+# set page title
 st.title("📊 Corporate Environmental Giving (2024)")
 
-# set the title for the first section
+####################################
+#        SUMMARY STATISTICS        #
+####################################
+
+# set section title
 st.header("Who's Represented in the Data?")
 
-def present_metrics(num_columns, metric_names, metric_values):
-    columns = st.columns(num_columns)
-    for column, metric_name, metric_value in zip(columns, metric_names, metric_values):
-        column.metric(metric_name, metric_value, border=True)
+def compute_summary_statistics(data):
+    # Compute the necessary metrics
+    companies = data["Name"].nunique()
+    SICs = data["Standard Industrial Classification (SIC)"].nunique()
+    median_float = f"${data['Public Float'].median():,.0f}"
+    min_filing_date = data["Date of Filing"].min()
+    max_filing_date = data["Date of Filing"].max()
+    median_gross_profit = f"${data['Gross Profit'].median():,.0f}"
 
-# present 6 metrics (number of public companies, number of SICs, median public float, min filing date, max filing date, and median gross profit) in 2 rows and 3 columns
-present_metrics(3, 
-                ["Public Companies", "Standard Industrial Classifications (SICs)", "Median Public Float"], 
-                [data["Name"].nunique(), data["Standard Industrial Classification (SIC)"].nunique(), f"${data['Public Float'].median():,.0f}"]
-                )
-present_metrics(3, 
-                ["Minimum Filing Date", "Maximum Filing Date", "Median Gross Profit"], 
-                [data["Date of Filing"].min(), data["Date of Filing"].max(), f"${data['Gross Profit'].median():,.0f}"]
-                )
+    return {
+        "Public Companies": companies,
+        "Standard Industrial Classifications (SICs)": SICs,
+        "Median Public Float": median_float,
+        "Minimum Filing Date": min_filing_date,
+        "Maximum Filing Date": max_filing_date,
+        "Median Gross Profit": median_gross_profit,
+    }
 
-# add about the data accordion
+# compute summary statistics
+summary_statistics = compute_summary_statistics(data)
+
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.metric(label="Public Companies", value=f"{summary_statistics['Public Companies']:,}", border=True)
+
+with col2:
+    st.metric(label="Standard Industrial Classifications (SICs)", value=f"{summary_statistics['Standard Industrial Classifications (SICs)']:,}", border=True)
+
+with col3:
+    st.metric(label="Median Public Float", value=summary_statistics['Median Public Float'], border=True)
+
+col4, col5, col6 = st.columns(3)
+with col4:
+    st.metric(label="Minimum Filing Date", value=str(summary_statistics['Minimum Filing Date']), border=True)
+
+with col5:
+    st.metric(label="Maximum Filing Date", value=str(summary_statistics['Maximum Filing Date']), border=True)
+
+with col6:
+    st.metric(label="Median Gross Profit", value=summary_statistics['Median Gross Profit'], border=True)
+
+####################################
+#          ABOUT THE DATA          #
+####################################
+
 with st.expander("📖 About the Data"):
     st.markdown(
         """
@@ -57,13 +93,21 @@ with st.expander("📖 About the Data"):
         """
     )
 
+#####################################################
+#  WHO'S REPRESENTED IN THE DATA? (SPECIFIC CHARTS) #
+#####################################################
 
+def plot_charts(num_columns, charts, contexts):
+    columns = st.columns(num_columns)
+    for column, chart, context in zip(columns, charts, contexts):
+        column.plotly_chart(chart)
+        column.markdown(context)
 
+### top reporting
 
 # aggregate number of headquarters by state
 state_headquarter_counts = data["State"].value_counts().reset_index()
 state_headquarter_counts.columns = ["State", "Count"]
-
 # create a bar chart for the top 3 states
 top_state_headquarter_counts = state_headquarter_counts.head(3)
 top_state_headquarter_counts_bar = px.bar(top_state_headquarter_counts,
@@ -86,18 +130,11 @@ bottom_state_headquarter_counts_bar = px.bar(bottom_state_headquarter_counts,
                                           labels={"Count": "Number of Corporate Headquarters", "State": "State"},
                                           orientation="h"
                                           )
-
 # add context
 bottom_state_headquarter_count1 = states.lookup(bottom_state_headquarter_counts.iloc[-1]['State']).name
 bottom_state_headquarter_count2 = states.lookup(bottom_state_headquarter_counts.iloc[-2]['State']).name
 bottom_state_headquarter_count3 = states.lookup(bottom_state_headquarter_counts.iloc[-3]['State']).name
 bottom_state_headquarter_counts_context = f"**{bottom_state_headquarter_count1}**, **{bottom_state_headquarter_count2}**, and **{bottom_state_headquarter_count3}** were the three states with the **lowest** number of corporate headquarters. The lack of headquarters can limit the number of high-income earners in the state, resulting in **fewer direct donations** to charitable organizations (Card, Hallock, & Moretti, 2009)."
-
-def plot_charts(num_columns, charts, contexts):
-    columns = st.columns(num_columns)
-    for column, chart, context in zip(columns, charts, contexts):
-        column.plotly_chart(chart)
-        column.markdown(context)
         
 # plot top and bottom 3 states in 2 columns
 plot_charts(2, [top_state_headquarter_counts_bar, bottom_state_headquarter_counts_bar], [top_state_headquarter_counts_context, bottom_state_headquarter_counts_context])
@@ -124,10 +161,11 @@ top_sector_counts_context = f"Standard Industrial Classifications (SICs) are thr
 # plot top sectors
 plot_charts(1, [top_sector_counts_bar], [top_sector_counts_context])
 
+### detail reporting
+
 # calculate detail status
 at_detail = (data['Detail'] == 1).sum()
 not_at_detail = data["Name"].nunique() - at_detail
-
 # create a donut chart for detail status
 detail_counts_donut = px.pie(
     names=["At Required Detail Level", "NOT at Required Detail Level"],
@@ -135,19 +173,20 @@ detail_counts_donut = px.pie(
     title="Number of Public Companies with Schedules at Required Detail Level",
     hole=0.5
 )
-
 # add context
 detail_counts_donut_context = f"A submission “at Required Detail Level” includes detailed quantitative disclosures in its footnotes and schedules. For example, instead of a total expense figure, it breaks down amounts into categories like compensation, accounting fees, and legal fees. Most submissions **did not** meet this level of detail ({(not_at_detail / (not_at_detail + at_detail) * 100):.1f}%). This could suggest **incomplete** and/or **inconsistent** philanthropic reports."
 
 # plot detail status
 plot_charts(1, [detail_counts_donut], [detail_counts_donut_context])
 
-# add some spacing
-""
-""
+#####################################################
+#   WHAT DOES THE DATA REVEAL... (SPECIFIC CHARTS)  #
+#####################################################
 
-# set the title for the second section
+# set section title
 st.header("What Does the Data Reveal About Spending on Environmental and Social Justice Causes?")
+
+### filters
 
 col1, col2 = st.columns(2)
 
@@ -171,12 +210,15 @@ if state != "None":
 else: 
     st.subheader(f"{metric}", help=f"{metric} {metrics.get(metric)}")
 
-# present 2 metrics ('metric' total and 'metric' median) in 2 columns
+# present metric total and median
+col1, col2 = st.columns(2)
 metric_total = f"${metric_data[metric].sum():,.0f}"
 metric_median = f"${metric_data[metric].median():,.0f}"
-present_metrics(2, [f"Total {metric}", f"Median {metric}"], [metric_total, metric_median])
+col1.metric(f"Total {metric}", metric_total, border=True)
+col2.metric(f"Median {metric}", metric_median, border=True)
 
-# create a distribution plot for 'metric'
+### metric distribution
+
 metric_distribution = px.histogram(metric_data,
                          x=metric,
                          nbins=50,
@@ -214,39 +256,43 @@ metric_reporting_counts_context = f"Most public companies **did not** report {me
 plot_charts(2, [metric_distribution, metric_reporting_counts_donut], [metric_distribution_context, metric_reporting_counts_context])
 
 if state != "None":
-
-    # create a scatterplot of companies reporting 'metric' in the selected state
+    # get coordinates of selected state
     state_coordinates = pd.read_csv("data/state-coordinates.csv")
-    state_coordinates = state_coordinates[state_coordinates["State"] == state]
-    state_latitude = state_coordinates["Latitude"].values[0]
-    state_longitude = state_coordinates["Longitude"].values[0]
-    metric_reporting_counts_scatterplot = px.scatter_geo(
-       metric_data,
-       lat="Latitude",
-       lon="Longitude",
-       hover_name="Name",
-       hover_data={"Latitude": False, "Longitude": False, "Address": True, "City": True, metric: True}
-    )
-    metric_reporting_counts_scatterplot.update_layout(
-        title=f"Public Companies Reporting {metric}",
-        geo=dict(scope="usa", center=dict(lat=state_latitude, lon=state_longitude), visible=True, projection_scale=5)
-    )
-    metric_reporting_counts_scatterplot.update_traces(marker=dict(size=20))
+    state_latitude, state_longitude = state_coordinates[state_coordinates["State"] == state][["Latitude", "Longitude"]].values[0]
+
+    # create a map of companies reporting 'metric', centered on the selected state
+    metric_reporting_counts_map = folium.Map(location=[state_latitude, state_longitude], zoom_start = 7, min_zoom = 5)
+    marker_cluster = plugins.MarkerCluster().add_to(metric_reporting_counts_map)
+    for row in metric_data.itertuples(index=False):
+        if pd.notna(row.Latitude) and pd.notna(row.Longitude):
+            folium.Marker([row.Latitude, row.Longitude], popup=folium.Popup(
+                f"<b>Name:</b><br>{row.Name}<br><b>Address:</b><br>{row.Address}, {row.City}", max_width=450)
+            ).add_to(marker_cluster)
+    st.subheader(f'Public Companies Reporting {metric}')
+    st.components.v1.html(folium.Figure().add_child(metric_reporting_counts_map).render(), height=500)
 
     # add context
-    metric_reporting_counts_scatterplot_context = (f"There are **{reporting_metric}** public companies reporting {metric} in {states.lookup(state).name}.")
-
-    plot_charts(1, [metric_reporting_counts_scatterplot], [metric_reporting_counts_scatterplot_context])
+    metric_reporting_counts_scatterplot_context = f"There are **{reporting_metric}** public companies reporting {metric} in {states.lookup(state).name}."
+    st.markdown(metric_reporting_counts_scatterplot_context)
 
 else:
     # aggregate metric totals by state
     metric_state_totals = metric_data.groupby("State")[metric].sum().reset_index()
 
-    # create a heatmap
-    metric_state_totals_choropleth = px.choropleth(metric_state_totals, 
-                                                   locations="State", locationmode="USA-states", scope="usa", 
-                                                   color=metric, color_continuous_scale="blues", title=f"{metric} by State", 
-                                                   )
+    # create a heatmap of companies reporting 'metric'
+    geojson = "https://raw.githubusercontent.com/python-visualization/folium-example-data/main/us_states.json"
+    metric_state_totals_choropleth = folium.Map([43, -100], zoom_start = 4, min_zoom = 4)
+    folium.Choropleth(
+        geo_data=geojson,
+        data=metric_state_totals,
+        columns=["State", metric],
+        nan_fill_opacity=0,
+        line_weight = 0.25,
+        key_on="feature.id",
+        legend_name=f"{metric} by State",
+    ).add_to(metric_state_totals_choropleth)
+    st.subheader(f"{metric} by State")
+    st.components.v1.html(folium.Figure().add_child(metric_state_totals_choropleth).render(), height=500)
     
     # add context
     top_metric_state_totals = metric_state_totals.nlargest(3, metric)
@@ -258,11 +304,8 @@ else:
     bottom_metric_state_total2 = states.lookup(bottom_metric_state_totals.iloc[1]['State']).name
     bottom_metric_state_total3 = states.lookup(bottom_metric_state_totals.iloc[2]['State']).name
     metric_state_totals_context = f"**{top_metric_state_total1}**, **{top_metric_state_total2}**, and **{top_metric_state_total3}** were the three states with the **greatest** {metric}, while **{bottom_metric_state_total1}**, **{bottom_metric_state_total2}**, and **{bottom_metric_state_total3}** were the three states with the **smallest** {metric}."
+    st.markdown(metric_state_totals_context)
 
-    plot_charts(1, [metric_state_totals_choropleth], [metric_state_totals_context])
-
-
-
-   # Add logo to sidebar
+# add logo to sidebar
 TUPLogo = read_logos("pictures")
 st.sidebar.image(TUPLogo) 
