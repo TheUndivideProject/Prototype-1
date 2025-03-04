@@ -50,9 +50,19 @@ st.markdown("*Insert an about the data, logo, and TUP dropdown")
 
 
 
+###################
+# SIDEBAR CONTENT #
+###################
 
-
+# Image
 TUPLogo = Image.open(f"pictures/TUP_logo.png")
 st.sidebar.image(TUPLogo)
 
-
+# TUP Overview Dropdown
+with st.sidebar.expander("About TUP"):
+    st.markdown("""
+    The Undivide Project focuses on the intersection of the climate crisis and the digital divide. 
+    We are most concerned about how the confluence of these critical issues impacts poor and BIPOC communities. 
+    Our goal is to use a portfolio of services to help communities create their own solutions. 
+    And we always — always unapologetically uplift the voices of the underserved.
+    """)
