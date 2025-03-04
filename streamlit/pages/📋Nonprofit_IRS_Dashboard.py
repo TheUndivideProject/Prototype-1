@@ -341,14 +341,14 @@ with tabs[1]:
     else:
         st.markdown("✅ No nonprofits flagged under this criteria.")
 
-    st.header("Compliance Status")
-    # Compliance Status Pie Chart
-    compliance_status = df_filtered["FILING_REQ_CD"].value_counts().reset_index()
-    compliance_status.columns = ["Compliance Status", "Count"]
+    # st.header("Compliance Status")
+    # # Compliance Status Pie Chart
+    # compliance_status = df_filtered["FILING_REQ_CD"].value_counts().reset_index()
+    # compliance_status.columns = ["Compliance Status", "Count"]
     
-    fig_compliance = px.pie(compliance_status, names="Compliance Status", values="Count",
-                            title=f"Compliance Status of Nonprofits ({nonprofit_size})")
-    st.plotly_chart(fig_compliance)
+    # fig_compliance = px.pie(compliance_status, names="Compliance Status", values="Count",
+    #                         title=f"Compliance Status of Nonprofits ({nonprofit_size})")
+    # st.plotly_chart(fig_compliance)
 
 
 
