@@ -40,15 +40,6 @@ st.markdown("""
 """)
 
 
-st.header("Current Actionable Insights")
-
-st.markdown("Input some actionable insights from both of the dashboards together? ")
-
-
-st.markdown("*Insert an about the data, logo, and TUP dropdown")
-
-
-
 
 ###################
 # SIDEBAR CONTENT #
