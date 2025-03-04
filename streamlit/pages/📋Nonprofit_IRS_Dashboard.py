@@ -378,6 +378,20 @@ with tabs[2]:
 
     st.dataframe(top_donors, width=800)
 
+    # Aggregate donor-recipient funding
+    donor_funding = df_env_990pf.groupby("NAME")["FAIRMRKTVALAMT"].sum().nlargest(10).reset_index()
+    
+    # Sankey Diagram Data
+    sankey_data = dict(
+        source=list(range(len(donor_funding))),
+        target=[len(donor_funding) + i for i in range(len(donor_funding))],
+        value=donor_funding["FAIRMRKTVALAMT"].tolist()
+    )
+    
+    fig_sankey = px.sankey(node=dict(label=list(donor_funding["NAME"]) + list(donor_funding["NAME"])), 
+                            link=sankey_data,
+                            title="Flow of Philanthropic Funds")
+    st.plotly_chart(fig_sankey)
 
 
 # # Top Sectors by Activity Code
@@ -398,17 +412,6 @@ with tabs[2]:
 # # Add context
 # st.markdown("**Note**: Each NTEE Code represents a specific nonprofit activity type (e.g., 'X20' for Religion-related services).")
 
-
-
-# # Select key metrics for visualization
-# st.subheader("Visualization")
-# metric = st.selectbox("Select a metric to analyze:", irs_data.columns)
-
-# if metric:
-#     st.write(f"### {metric} Distribution")
-#     fig, ax = plt.subplots()
-#     irs_data[metric].hist(bins=20, ax=ax)
-#     st.pyplot(fig)
 
 
 ###################################
