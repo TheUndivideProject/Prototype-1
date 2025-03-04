@@ -1,5 +1,4 @@
 import streamlit as st
-import matplotlib.pyplot as plt
 from PIL import Image
 
 # Set up page configuration
@@ -38,9 +37,7 @@ st.markdown("""
 -   **Corporate**: documents insights from financial and philanthropic metrics from the Securities and Exchange Commission (SEC) financial statements of public companies.
 
 -   **Nonprofit**: documents insights from financial and philanthropic metrics from the IRS Exempt Organizations Business Master File and Form 990 filings of tax-exempt organizations.
-
--   **Comparative Analysis**: This page will highlight a comparative analysis of the individual work done on the Corporate and Nonprofit level. It will provide both a holistic view of how philanthropic giving operates at different granularities, and be the starting point for our dashboard.
-            """)
+""")
 
 
 st.header("Current Actionable Insights")
