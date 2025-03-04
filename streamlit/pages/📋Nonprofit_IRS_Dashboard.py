@@ -385,6 +385,11 @@ with tabs[2]:
 #     irs_data[metric].hist(bins=20, ax=ax)
 #     st.pyplot(fig)
 
+
+###################################
+#       SIDEBAR ADDITIONS         #
+###################################
+
 # Add logo to sidebar
 TUPLogo = read_logos("pictures")
 st.sidebar.image(TUPLogo)
