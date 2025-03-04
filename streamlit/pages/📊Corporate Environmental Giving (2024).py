@@ -108,6 +108,7 @@ def plot_charts(num_columns, charts, contexts):
 # aggregate number of headquarters by state
 state_headquarter_counts = data["State"].value_counts().reset_index()
 state_headquarter_counts.columns = ["State", "Count"]
+
 # create a bar chart for the top 3 states
 top_state_headquarter_counts = state_headquarter_counts.head(3)
 top_state_headquarter_counts_bar = px.bar(top_state_headquarter_counts,
@@ -166,6 +167,7 @@ plot_charts(1, [top_sector_counts_bar], [top_sector_counts_context])
 # calculate detail status
 at_detail = (data['Detail'] == 1).sum()
 not_at_detail = data["Name"].nunique() - at_detail
+
 # create a donut chart for detail status
 detail_counts_donut = px.pie(
     names=["At Required Detail Level", "NOT at Required Detail Level"],
@@ -212,8 +214,10 @@ else:
 
 # present metric total and median
 col1, col2 = st.columns(2)
+
 metric_total = f"${metric_data[metric].sum():,.0f}"
 metric_median = f"${metric_data[metric].median():,.0f}"
+
 col1.metric(f"Total {metric}", metric_total, border=True)
 col2.metric(f"Median {metric}", metric_median, border=True)
 
@@ -229,12 +233,14 @@ metric_distribution.update_layout(xaxis_title=f"{metric} (USD)", yaxis_title="Fr
 
 # add context
 metric_skewness = skew(metric_data[metric], axis=0, bias=True)
+
 if metric_skewness > 0:
     metric_skewness = "right-skewed"
 elif metric_skewness < 0:
     metric_skewness = "left-skewed"
 else:
     metric_skewness = "Normal"
+
 metric_distribution_context = f"The distribution of {metric} is **{metric_skewness}** with a median of **\{metric_median}**. Most {metric} fell in the range of **\${metric_data[metric].quantile(.25):,.0f}-${metric_data[metric].quantile(.75):,.0f}**."
 
 # calculate reporting status
@@ -291,6 +297,7 @@ else:
         key_on="feature.id",
         legend_name=f"{metric} by State",
     ).add_to(metric_state_totals_choropleth)
+
     st.subheader(f"{metric} by State")
     st.components.v1.html(folium.Figure().add_child(metric_state_totals_choropleth).render(), height=500)
     
@@ -299,10 +306,12 @@ else:
     top_metric_state_total1 = states.lookup(top_metric_state_totals.iloc[0]['State']).name
     top_metric_state_total2 = states.lookup(top_metric_state_totals.iloc[1]['State']).name
     top_metric_state_total3 = states.lookup(top_metric_state_totals.iloc[2]['State']).name
+
     bottom_metric_state_totals = metric_state_totals.nsmallest(3, metric)
     bottom_metric_state_total1 = states.lookup(bottom_metric_state_totals.iloc[0]['State']).name
     bottom_metric_state_total2 = states.lookup(bottom_metric_state_totals.iloc[1]['State']).name
     bottom_metric_state_total3 = states.lookup(bottom_metric_state_totals.iloc[2]['State']).name
+    
     metric_state_totals_context = f"**{top_metric_state_total1}**, **{top_metric_state_total2}**, and **{top_metric_state_total3}** were the three states with the **greatest** {metric}, while **{bottom_metric_state_total1}**, **{bottom_metric_state_total2}**, and **{bottom_metric_state_total3}** were the three states with the **smallest** {metric}."
     st.markdown(metric_state_totals_context)
 
