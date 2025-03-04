@@ -285,15 +285,15 @@ else:
 
 st.dataframe(top_donors, width=800)
 
-# Network Graph
-graph = nx.Graph()
-for _, row in df_env_990pf.iterrows():
-    donor_name = row["NAME"] if "NAME" in df_env_990pf.columns else row["EIN"]
-    graph.add_edge(donor_name, row["EIN"], weight=row["FAIRMRKTVALAMT"])
+# # Network Graph
+# graph = nx.Graph()
+# for _, row in df_env_990pf.iterrows():
+#     donor_name = row["NAME"] if "NAME" in df_env_990pf.columns else row["EIN"]
+#     graph.add_edge(donor_name, row["EIN"], weight=row["FAIRMRKTVALAMT"])
 
-plt.figure(figsize=(10, 6))
-nx.draw(graph, with_labels=True, node_size=20, font_size=8)
-st.pyplot(plt)
+# plt.figure(figsize=(10, 6))
+# nx.draw(graph, with_labels=True, node_size=20, font_size=8)
+# st.pyplot(plt)
 
 # # Create a pie chart
 # fig = px.pie(compliance_status, 
