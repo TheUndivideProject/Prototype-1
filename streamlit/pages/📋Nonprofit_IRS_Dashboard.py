@@ -95,33 +95,42 @@ def compute_summary_stats():
     }
 
 
+###################################
+#      DASHBOARD PROPER           #
+###################################
+
 # Title
 st.title("🌱 Environmental Nonprofits Giving (2023)")
 
-# Compute stats
-summary_stats = compute_summary_stats()
 
-# Create a grid layout with key metrics
-col1, col2, col3 = st.columns(3)
+# Tabs for navigation
+tabs = st.tabs(["Overview", "Funding Distribution", "Financial Health", "Funding Flow"])
 
-with col1:
-    st.metric(label="Total Environment Nonprofits", value=f"{summary_stats['Total Environmental Nonprofits']:,}")
+with tabs[0]:
+    # Compute stats
+    summary_stats = compute_summary_stats()
 
-with col2:
-    st.metric(label="Total Revenue ($)", value=f"${summary_stats['Total Revenue ($)']:,.2f}")
+    # Create a grid layout with key metrics
+    col1, col2, col3 = st.columns(3)
 
-with col3:
-    st.metric(label="Total Assets ($)", value=f"${summary_stats['Total Assets ($)']:,.2f}")
+    with col1:
+        st.metric(label="Total Environment Nonprofits", value=f"{summary_stats['Total Environmental Nonprofits']:,}", border=True)
+        st.metric(label="Small Nonprofits (<$1M)", value=f"{summary_stats['Small Nonprofits (<$1M)']:,}", border=True)
 
-# Expander for detailed statistics
-with st.expander("📊 View Detailed Statistics"):
-    st.dataframe(pd.DataFrame(summary_stats.items(), columns=["Metric", "Value"]))
+    with col2:
+        st.metric(label="Total Revenue ($)", value=f"${summary_stats['Total Revenue ($)']:,.2f}",  border=True)
+        st.metric(label="Medium Nonprofits ($1M-$10M)", value=f"{summary_stats['Medium Nonprofits ($1M-$10M)']:,}", border=True)
 
-# # Optional: Visualization of revenue/assets/expenses
-# st.bar_chart(pd.DataFrame({
-#     "Metric": ["Total Revenue ($)", "Total Assets ($)", "Total Expenses ($)"],
-#     "Value": [summary_stats["Total Revenue ($)"], summary_stats["Total Assets ($)"], summary_stats["Total Expenses ($)"]]
-# }).set_index("Metric"))
+    with col3:
+        st.metric(label="Total Assets ($)", value=f"${summary_stats['Total Assets ($)']:,.2f}", border=True)
+        st.metric(label="Large Nonprofits (>$10M)", value=f"{summary_stats['Large Nonprofits (>$10M)']:,}", border=True)
+
+
+    # # Optional: Visualization of revenue/assets/expenses
+    # st.bar_chart(pd.DataFrame({
+    #     "Metric": ["Total Revenue ($)", "Total Assets ($)", "Total Expenses ($)"],
+    #     "Value": [summary_stats["Total Revenue ($)"], summary_stats["Total Assets ($)"], summary_stats["Total Expenses ($)"]]
+    # }).set_index("Metric"))
 
 
 ###################################
