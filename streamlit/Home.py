@@ -56,8 +56,25 @@ with st.expander("🌱 More About SEED 🌱"):
 # SIDEBAR CONTENT #
 ###################
 
+def read_logos(logos_path):
+    """
+    Reads and returns the STC, UNICEF, and DSA logos from the provided path.
+
+    Parameters:
+    -----------
+    logos_path : str
+        The path to the directory containing the logo images.
+
+    Returns:
+    --------
+    tuple of PIL.Image.Image
+        The STC, UNICEF, and DSA logos as PIL Image objects.
+    """
+    TUPLogo = Image.open(f"{logos_path}/TUP_logo.png")
+    return TUPLogo
+
 # Image
-TUPLogo = Image.open(f"pictures/TUP_logo.png")
+TUPLogo = read_logos("pictures")
 st.sidebar.image(TUPLogo)
 
 # TUP Overview Dropdown
