@@ -19,14 +19,25 @@ This website aims to provide insights into philanthropic spending related to env
 
 """)
 
+# Add some spacing between sections
+st.markdown("<br><br>", unsafe_allow_html=True)
+st.markdown("<br><br>", unsafe_allow_html=True)
 
+# About Each Dashboard (Two Columns)
+st.markdown("<h2 style='text-align: center;'> About Each Dashboard </h2>", unsafe_allow_html=True)
+col1, col2 = st.columns(2)
 
-st.header("About Each Dashboard")
-st.markdown("""
--   **Corporate**: Explore corporate giving through our corporate portion of the dashboard. It documents insights from financial and philanthropic metrics from the Securities and Exchange Commission (SEC) financial statements of public companies.
+with col1:
+    st.subheader("📊 :blue[Corporate Dashboard]")
+    st.markdown("""
+    Explore corporate giving through our corporate portion of the dashboard. It documents insights from financial and philanthropic metrics from the Securities and Exchange Commission (SEC) financial statements of public companies.
+    """)
 
--   **Nonprofit**: Navigate current nonprofit spending through our nonprofit dashboard documents. This includes insights from financial and philanthropic metrics from the IRS Exempt Organizations Business Master File and Form 990 filings of tax-exempt organizations.
-""")
+with col2:
+    st.subheader("📋 :green[Nonprofit Dashboard]")
+    st.markdown("""
+    Navigate current nonprofit spending through our nonprofit dashboard documents. This includes insights from financial and philanthropic metrics from the IRS Exempt Organizations Business Master File and Form 990 filings of tax-exempt organizations.
+    """)
 
 
 with st.expander("🌱 More About SEED 🌱"):
