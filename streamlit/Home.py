@@ -8,6 +8,20 @@ st.set_page_config(
     layout="wide",
 )
 
+# Sidebar styling
+st.markdown(
+    """
+    <style>
+        /* Adjust Sidebar Width */
+        [data-testid="stSidebar"] {
+            min-width: 300px;
+            max-width: 350px;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Title and Introducption
 st.title("🌱 SEED: Sustainability and Equity Environmental Dashboards")
 st.markdown("""
