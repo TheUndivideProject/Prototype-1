@@ -21,7 +21,6 @@ This website aims to provide insights into philanthropic spending related to env
 
 # Add some spacing between sections
 st.markdown("<br><br>", unsafe_allow_html=True)
-st.markdown("<br><br>", unsafe_allow_html=True)
 
 # About Each Dashboard (Two Columns)
 st.markdown("<h2 style='text-align: center;'> About Each Dashboard </h2>", unsafe_allow_html=True)
