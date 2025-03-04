@@ -5,7 +5,7 @@ import pandas as pd
 import plotly.express as px
 import networkx as nx
 from Home import read_logos
-# import pydeck as pdk
+import pydeck as pdk
 
 # Page configuration
 st.set_page_config(
@@ -27,7 +27,8 @@ file_paths_sample = {
     "EOBMF": "data/Updated Regional Giving Data IRS eo1.csv",
     "Form990": "data/23eoextract990.csv",
     "Form990PF": "data/23eoextract990pf.csv",
-    "Form990EZ": "data/23eoextractez.csv"  # Assuming this is the sample version
+    "Form990EZ": "data/23eoextractez.csv",
+    "state_coords": "data/state-coordinates.csv"
 }
 
 # Read datasets
@@ -35,6 +36,7 @@ df_bmf = load_data(file_paths_sample["EOBMF"])
 df_990 = load_data(file_paths_sample["Form990"])
 df_990pf = load_data(file_paths_sample["Form990PF"])
 df_990ez = load_data(file_paths_sample["Form990EZ"])
+state_coords = load_data(file_paths_sample["state_coords"])
 
 # Filter the BMF dataset for environmental nonprofits using NTEE codes (C30-C60)
 env_ntee_codes = [f"C{i}" for i in range(30, 61)]
@@ -165,54 +167,88 @@ with st.expander("📖 About the Data"):
 #        SPECIFIC CHARTS          #
 ###################################
 
+with tabs[0]:
 
-### Top Reporting
-# Aggregate revenue by state
-state_funding = df_bmf.groupby('STATE')['REVENUE_AMT'].sum().reset_index()
-state_funding.columns = ['State', 'Total Revenue']
+    ### Time Series
 
-# Sort data to get top 10 and bottom 10 states
-top_3_states = state_funding.sort_values(by='Total Revenue', ascending=False).head(3)
-bottom_3_states = state_funding.sort_values(by='Total Revenue', ascending=True).head(3)
+    ### Top Reporting
+    # Aggregate total revenue by state
+    state_funding = df_bmf.groupby("STATE")["REVENUE_AMT"].sum().reset_index().dropna()
+    
+    state_funding.columns = ['State', 'Total Revenue']
 
-# Title for the section
-st.header("Funding Distribution by State")
+    # Sort data to get top 3 and bottom 3 states
+    top_3_states = state_funding.sort_values(by='Total Revenue', ascending=False).head(3)
+    bottom_3_states = state_funding.sort_values(by='Total Revenue', ascending=True).head(3)
 
-# Top 3 States
-st.subheader("🌟 Top 3 States by Funding")
-st.markdown("""
-These states are receiving the highest levels of nonprofit funding. This could indicate areas with greater philanthropic activity or larger nonprofit networks.
-""")
-fig_top = px.bar(top_3_states, 
-                 x='Total Revenue', y='State', 
-                 orientation='h', 
-                 title='Top 3 States by Total Revenue',
-                 labels={'Total Revenue': 'Total Revenue (USD)', 'State': 'State'},
-                 text='Total Revenue',
-                 color='Total Revenue',
-                 color_continuous_scale='greens')
+    # Title for the section
+    st.header("Funding Distribution by State")
 
-fig_top.update_traces(texttemplate='$%{text:.2s}', textposition='outside')
-fig_top.update_layout(xaxis_title='Total Revenue (USD)', yaxis_title='State')
-st.plotly_chart(fig_top)
-
-# Bottom 3 States
-st.subheader("🔍 Bottom 3 States by Funding")
-st.markdown("""
-These states have the lowest levels of nonprofit funding. They may represent underserved regions or areas of potential investment for philanthropic organizations.
-""")
-fig_bottom = px.bar(bottom_3_states, 
+    # Top 3 States
+    st.subheader("🌟 Top 3 States by Funding")
+    st.markdown("""
+    These states are receiving the highest levels of nonprofit funding. This could indicate areas with greater philanthropic activity or larger nonprofit networks.
+    """)
+    fig_top = px.bar(top_3_states, 
                     x='Total Revenue', y='State', 
                     orientation='h', 
-                    title='Bottom 3 States by Total Revenue',
+                    title='Top 3 States by Total Revenue',
                     labels={'Total Revenue': 'Total Revenue (USD)', 'State': 'State'},
                     text='Total Revenue',
                     color='Total Revenue',
-                    color_continuous_scale='reds')
+                    color_continuous_scale='greens')
 
-fig_bottom.update_traces(texttemplate='$%{text:.2s}', textposition='outside')
-fig_bottom.update_layout(xaxis_title='Total Revenue (USD)', yaxis_title='State')
-st.plotly_chart(fig_bottom)
+    fig_top.update_traces(texttemplate='$%{text:.2s}', textposition='outside')
+    fig_top.update_layout(xaxis_title='Total Revenue (USD)', yaxis_title='State')
+    st.plotly_chart(fig_top)
+
+    # Bottom 3 States
+    st.subheader("🔍 Bottom 3 States by Funding")
+    st.markdown("""
+    These states have the lowest levels of nonprofit funding. They may represent underserved regions or areas of potential investment for philanthropic organizations.
+    """)
+    fig_bottom = px.bar(bottom_3_states, 
+                        x='Total Revenue', y='State', 
+                        orientation='h', 
+                        title='Bottom 3 States by Total Revenue',
+                        labels={'Total Revenue': 'Total Revenue (USD)', 'State': 'State'},
+                        text='Total Revenue',
+                        color='Total Revenue',
+                        color_continuous_scale='reds')
+
+    fig_bottom.update_traces(texttemplate='$%{text:.2s}', textposition='outside')
+    fig_bottom.update_layout(xaxis_title='Total Revenue (USD)', yaxis_title='State')
+    st.plotly_chart(fig_bottom)
+
+
+    # Merge with state coordinates
+    state_funding = state_funding.merge(state_coords, left_on="State", right_on="State", how="left")
+    
+    # Choropleth Map
+    fig_choropleth = px.choropleth(state_funding, 
+                                   locations="State", 
+                                   locationmode="USA-states", 
+                                   color="Total Revenue", 
+                                   color_continuous_scale="Viridis", 
+                                   scope="usa", 
+                                   title="Total Nonprofit Revenue by State")
+    st.plotly_chart(fig_choropleth)
+    
+    # Bubble Map
+    st.subheader("Bubble Map of Nonprofit Funding")
+    state_funding = state_funding[state_funding["Latitude"].notna() & state_funding["Longitude"].notna()]
+    
+    bubble_layer = pdk.Layer(
+        "ScatterplotLayer",
+        data=state_funding,
+        get_position="[Longitude, Latitude]",
+        get_radius="REVENUE_AMT / 1e9",
+        get_color="[200, 30, 0, 160]",
+        pickable=True,
+    )
+    
+    view_state = pdk.ViewState(latitude=39.8, longitude=-98.6, zoom=3)
+    st.pydeck_chart(pdk.Deck(layers=[bubble_layer], initial_view_state=view_state))
 
 
 
@@ -289,15 +325,6 @@ else:
 
 st.dataframe(top_donors, width=800)
 
-# # Network Graph
-# graph = nx.Graph()
-# for _, row in df_env_990pf.iterrows():
-#     donor_name = row["NAME"] if "NAME" in df_env_990pf.columns else row["EIN"]
-#     graph.add_edge(donor_name, row["EIN"], weight=row["FAIRMRKTVALAMT"])
-
-# plt.figure(figsize=(10, 6))
-# nx.draw(graph, with_labels=True, node_size=20, font_size=8)
-# st.pyplot(plt)
 
 # # Create a pie chart
 # fig = px.pie(compliance_status, 
