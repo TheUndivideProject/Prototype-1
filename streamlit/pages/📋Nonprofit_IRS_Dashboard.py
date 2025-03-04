@@ -5,7 +5,7 @@ import pandas as pd
 import plotly.express as px
 import networkx as nx
 from Home import read_logos
-# import pydeck as pdk
+import pydeck as pdk
 
 # Page configuration
 st.set_page_config(
@@ -24,10 +24,11 @@ def load_data(filepath):
 
 # Define dataset paths
 file_paths_sample = {
-    "EOBMF": "../data/Updated Regional Giving Data IRS eo1.csv",
-    "Form990": "../data/23eoextract990.csv",
-    "Form990PF": "../data/23eoextract990pf.csv",
-    "Form990EZ": "../data/23eoextractez.csv"  # Assuming this is the sample version
+    "EOBMF": "data/Updated Regional Giving Data IRS eo1.csv",
+    "Form990": "data/23eoextract990.csv",
+    "Form990PF": "data/23eoextract990pf.csv",
+    "Form990EZ": "data/23eoextractez.csv",
+    "state_coords": "data/state-coordinates.csv"
 }
 
 # Read datasets
@@ -35,6 +36,7 @@ df_bmf = load_data(file_paths_sample["EOBMF"])
 df_990 = load_data(file_paths_sample["Form990"])
 df_990pf = load_data(file_paths_sample["Form990PF"])
 df_990ez = load_data(file_paths_sample["Form990EZ"])
+state_coords = load_data(file_paths_sample["state_coords"])
 
 # Filter the BMF dataset for environmental nonprofits using NTEE codes (C30-C60)
 env_ntee_codes = [f"C{i}" for i in range(30, 61)]
@@ -95,33 +97,37 @@ def compute_summary_stats():
     }
 
 
+###################################
+#      DASHBOARD PROPER           #
+###################################
+
 # Title
 st.title("🌱 Environmental Nonprofits Giving (2023)")
 
-# Compute stats
-summary_stats = compute_summary_stats()
 
-# Create a grid layout with key metrics
-col1, col2, col3 = st.columns(3)
+# Tabs for navigation
+tabs = st.tabs(["Overview", "Financial Health", "Funding Flow"])
 
-with col1:
-    st.metric(label="Total Environment Nonprofits", value=f"{summary_stats['Total Environmental Nonprofits']:,}")
+with tabs[0]:
+    # Compute stats
+    summary_stats = compute_summary_stats()
 
-with col2:
-    st.metric(label="Total Revenue ($)", value=f"${summary_stats['Total Revenue ($)']:,.2f}")
+    # Create a grid layout with key metrics
+    col1, col2, col3 = st.columns(3)
 
-with col3:
-    st.metric(label="Total Assets ($)", value=f"${summary_stats['Total Assets ($)']:,.2f}")
+    with col1:
+        st.metric(label="Total Environment Nonprofits", value=f"{summary_stats['Total Environmental Nonprofits']:,}", border=True)
+        st.metric(label="Small Nonprofits (<$1M)", value=f"{summary_stats['Small Nonprofits (<$1M)']:,}", border=True)
 
-# Expander for detailed statistics
-with st.expander("📊 View Detailed Statistics"):
-    st.dataframe(pd.DataFrame(summary_stats.items(), columns=["Metric", "Value"]))
+    with col2:
+        st.metric(label="Total Revenue ($)", value=f"${summary_stats['Total Revenue ($)']:,.2f}",  border=True)
+        st.metric(label="Medium Nonprofits (\$1M-\$10M)", value=f"{summary_stats['Medium Nonprofits ($1M-$10M)']:,}", border=True)
 
-# # Optional: Visualization of revenue/assets/expenses
-# st.bar_chart(pd.DataFrame({
-#     "Metric": ["Total Revenue ($)", "Total Assets ($)", "Total Expenses ($)"],
-#     "Value": [summary_stats["Total Revenue ($)"], summary_stats["Total Assets ($)"], summary_stats["Total Expenses ($)"]]
-# }).set_index("Metric"))
+    with col3:
+        st.metric(label="Total Assets ($)", value=f"${summary_stats['Total Assets ($)']:,.2f}", border=True)
+        st.metric(label="Large Nonprofits (>$10M)", value=f"{summary_stats['Large Nonprofits (>$10M)']:,}", border=True)
+
+
 
 
 ###################################
@@ -158,156 +164,192 @@ with st.expander("📖 About the Data"):
 
 
 ###################################
-#        SPECIFIC CHARTS          #
+#    OVERVIEW/$$$ DISTRIBUTION    #
 ###################################
 
+with tabs[0]:
 
-### Top Reporting
-# Aggregate revenue by state
-state_funding = df_bmf.groupby('STATE')['REVENUE_AMT'].sum().reset_index()
-state_funding.columns = ['State', 'Total Revenue']
+    ### Time Series
 
-# Sort data to get top 10 and bottom 10 states
-top_3_states = state_funding.sort_values(by='Total Revenue', ascending=False).head(3)
-bottom_3_states = state_funding.sort_values(by='Total Revenue', ascending=True).head(3)
+    ### Top Reporting
+    # Aggregate total revenue by state
+    state_funding = df_bmf.groupby("STATE")["REVENUE_AMT"].sum().reset_index().dropna()
+    
+    state_funding.columns = ['State', 'Total Revenue']
 
-# Title for the section
-st.header("Funding Distribution by State")
+    # Sort data to get top 3 and bottom 3 states
+    top_3_states = state_funding.sort_values(by='Total Revenue', ascending=False).head(3)
+    bottom_3_states = state_funding.sort_values(by='Total Revenue', ascending=True).head(3)
 
-# Top 3 States
-st.subheader("🌟 Top 3 States by Funding")
-st.markdown("""
-These states are receiving the highest levels of nonprofit funding. This could indicate areas with greater philanthropic activity or larger nonprofit networks.
-""")
-fig_top = px.bar(top_3_states, 
-                 x='Total Revenue', y='State', 
-                 orientation='h', 
-                 title='Top 3 States by Total Revenue',
-                 labels={'Total Revenue': 'Total Revenue (USD)', 'State': 'State'},
-                 text='Total Revenue',
-                 color='Total Revenue',
-                 color_continuous_scale='greens')
+    # Title for the section
+    st.header("Funding Distribution by State")
 
-fig_top.update_traces(texttemplate='$%{text:.2s}', textposition='outside')
-fig_top.update_layout(xaxis_title='Total Revenue (USD)', yaxis_title='State')
-st.plotly_chart(fig_top)
-
-# Bottom 3 States
-st.subheader("🔍 Bottom 3 States by Funding")
-st.markdown("""
-These states have the lowest levels of nonprofit funding. They may represent underserved regions or areas of potential investment for philanthropic organizations.
-""")
-fig_bottom = px.bar(bottom_3_states, 
+    # Top 3 States
+    st.subheader("🌟 Top 3 States by Funding")
+    st.markdown("""
+    These states are receiving the highest levels of nonprofit funding. This could indicate areas with greater philanthropic activity or larger nonprofit networks.
+    """)
+    fig_top = px.bar(top_3_states, 
                     x='Total Revenue', y='State', 
                     orientation='h', 
-                    title='Bottom 3 States by Total Revenue',
+                    title='Top 3 States by Total Revenue',
                     labels={'Total Revenue': 'Total Revenue (USD)', 'State': 'State'},
                     text='Total Revenue',
                     color='Total Revenue',
-                    color_continuous_scale='reds')
+                    color_continuous_scale='greens')
 
-fig_bottom.update_traces(texttemplate='$%{text:.2s}', textposition='outside')
-fig_bottom.update_layout(xaxis_title='Total Revenue (USD)', yaxis_title='State')
-st.plotly_chart(fig_bottom)
+    fig_top.update_traces(texttemplate='$%{text:.2s}', textposition='outside')
+    fig_top.update_layout(xaxis_title='Total Revenue (USD)', yaxis_title='State')
+    st.plotly_chart(fig_top)
+
+    # Bottom 3 States
+    st.subheader("🔍 Bottom 3 States by Funding")
+    st.markdown("""
+    These states have the lowest levels of nonprofit funding. They may represent underserved regions or areas of potential investment for philanthropic organizations.
+    """)
+    fig_bottom = px.bar(bottom_3_states, 
+                        x='Total Revenue', y='State', 
+                        orientation='h', 
+                        title='Bottom 3 States by Total Revenue',
+                        labels={'Total Revenue': 'Total Revenue (USD)', 'State': 'State'},
+                        text='Total Revenue',
+                        color='Total Revenue',
+                        color_continuous_scale='reds')
+
+    fig_bottom.update_traces(texttemplate='$%{text:.2s}', textposition='outside')
+    fig_bottom.update_layout(xaxis_title='Total Revenue (USD)', yaxis_title='State')
+    st.plotly_chart(fig_bottom)
+
+
+    # Merge with state coordinates
+    state_funding = state_funding.merge(state_coords, left_on="State", right_on="State", how="left")
+    
+    # Choropleth Map
+    fig_choropleth = px.choropleth(state_funding, 
+                                   locations="State", 
+                                   locationmode="USA-states", 
+                                   color="Total Revenue", 
+                                   color_continuous_scale="Viridis", 
+                                   scope="usa", 
+                                   title="Total Nonprofit Revenue by State")
+    st.plotly_chart(fig_choropleth)
+    
+    # Bubble Map
+    st.subheader("Bubble Map of Nonprofit Funding")
+    state_funding = state_funding[state_funding["Latitude"].notna() & state_funding["Longitude"].notna()]
+    
+    bubble_layer = pdk.Layer(
+        "ScatterplotLayer",
+        data=state_funding,
+        get_position="[Longitude, Latitude]",
+        get_radius="REVENUE_AMT / 1e9",
+        get_color="[200, 30, 0, 160]",
+        pickable=True,
+    )
+    
+    view_state = pdk.ViewState(latitude=39.8, longitude=-98.6, zoom=3)
+    st.pydeck_chart(pdk.Deck(layers=[bubble_layer], initial_view_state=view_state))
+
+
+    ### Revenue Visualization
+    # Revenue Distribution
+    fig_revenue = px.histogram(df_bmf, 
+                            x='REVENUE_AMT', 
+                            nbins=50, 
+                            title='Distribution of Revenue Among Nonprofits',
+                            labels={'REVENUE_AMT': 'Revenue Amount'},
+                            log_y=True)
+
+    fig_revenue.update_layout(xaxis_title='Revenue Amount (USD)', 
+                            yaxis_title='Frequency (Log Scale)',
+                            hovermode='x')
+
+    st.plotly_chart(fig_revenue)
+
+    # Add context
+    st.markdown("**Note**: Most nonprofits have lower revenue, but there are some high-revenue outliers that significantly impact the overall distribution.")
+
 
 
 
 ###################################
 #        FINANCIAL HEALTH         #
 ###################################
-st.header("📊 Financial Transparency & Health")
 
-# Sidebar Filters
-st.sidebar.header("🔍 Filter Options")
-nonprofit_size = st.sidebar.radio("Select Nonprofit Size:", ["Small (<$1M)", "Medium ($1M-$10M)", "Large (>$10M)"])
+with tabs[1]:
+    st.header(":triangular_flag_on_post: Financial Transparency & Health")
 
-if nonprofit_size == "Small (<$1M)":
-    df_filtered = df_env_990[df_env_990["totassetsend"] < 1_000_000]
-elif nonprofit_size == "Medium ($1M-$10M)":
-    df_filtered = df_env_990[(df_env_990["totassetsend"] >= 1_000_000) & (df_env_990["totassetsend"] <= 10_000_000)]
-else:
-    df_filtered = df_env_990[df_env_990["totassetsend"] > 10_000_000]
+    # Dropdown filter
+    nonprofit_size = st.selectbox("Select Nonprofit Size:", ["All", "Small (<$1M)", "Medium ($1M-10M)", "Large (>$10M)"])
+    
+    # Apply filtering
+    if nonprofit_size == "Small (<$1M)":
+        df_filtered = df_env_990[df_env_990["totassetsend"] < 1_000_000]
+    elif nonprofit_size == "Medium ($1M-10M)":
+        df_filtered = df_env_990[(df_env_990["totassetsend"] >= 1_000_000) & (df_990["totassetsend"] <= 10_000_000)]
+    elif nonprofit_size == "Large (>$10M)":
+        df_filtered = df_env_990[df_env_990["totassetsend"] > 10_000_000]
+    else:
+        df_filtered = df_env_990 
 
-# Interactive Boxplot for Program vs. Admin Spending
-fig_box = px.box(df_filtered, y=["totfuncexpns", "payrolltx"],
-                 labels={"value": "Dollars Spent", "variable": "Expense Type"},
-                 title=f"Program vs. Admin Expenses - {nonprofit_size}",
-                 template="plotly_dark")
-st.plotly_chart(fig_box)
+  
+    # Interactive Boxplot for Program vs. Admin Spending
+    fig_box = px.box(df_filtered, y=["totfuncexpns", "payrolltx"],
+                    labels={"value": "Dollars Spent", "variable": "Expense Type"},
+                    title=f"Program vs. Admin Expenses - {nonprofit_size}",
+                    template="plotly_dark")
+    st.plotly_chart(fig_box)
 
-# Interactive Histogram of Executive Compensation
-fig_hist = px.histogram(df_filtered, x="payrolltx", nbins=30,
-                        title="Distribution of Executive Compensation",
-                        labels={"payrolltx": "Executive Compensation ($)"},
-                        template="plotly_dark")
-st.plotly_chart(fig_hist)
-
-# Financial Red Flags Dashboard
-df_red_flags = df_filtered[df_filtered["totfuncexpns"] / df_filtered["totrevenue"] < 0.5]
-st.subheader("⚠️ Financial Red Flags: Nonprofits Spending <50% on Programs")
-
-if not df_red_flags.empty:
-    fig_redflags = px.bar(df_red_flags, x="ein", y="totfuncexpns",
-                          title="Nonprofits Spending <50% on Programs",
-                          labels={"ein": "EIN", "totfuncexpns": "Total Functional Expenses"},
-                          color="totfuncexpns", template="plotly_dark")
-    st.plotly_chart(fig_redflags)
-else:
-    st.markdown("✅ No nonprofits flagged under this criteria.")
-
-### State Choropleth
-# Aggregate total revenue by state
-state_funding = df_bmf.groupby('STATE')['REVENUE_AMT'].sum().reset_index()
-state_funding.columns = ['State', 'Total Revenue']
-
-# Create a heatmap
-fig = px.choropleth(state_funding, 
-                    locations='State', 
-                    locationmode='USA-states', 
-                    color='Total Revenue',
-                    color_continuous_scale='Viridis',
-                    scope='usa',
-                    title='Funding Distribution Across States')
-st.plotly_chart(fig)
+    # Interactive Histogram of Executive Compensation
+    fig_hist = px.histogram(df_filtered, x="payrolltx", nbins=30,
+                            title="Distribution of Executive Compensation",
+                            labels={"payrolltx": "Executive Compensation ($)"},
+                            template="plotly_dark")
+    st.plotly_chart(fig_hist)
 
 
+    # Compute program vs. admin expenses
+    df_expenses = pd.DataFrame({
+        "Expense Type": ["Program Expenses", "Administrative Expenses"],
+        "Amount ($)": [df_filtered["totfuncexpns"].sum(), df_filtered["payrolltx"].sum()]
+    })
+    
+    fig_exp = px.pie(df_expenses, names="Expense Type", values="Amount ($)",
+                     title=f"Program vs. Admin Expenses ({nonprofit_size})")
+    st.plotly_chart(fig_exp)
+    
+    # Executive Compensation Distribution
+    fig_hist = px.histogram(df_filtered, x="payrolltx", nbins=30,
+                            title=f"Distribution of Executive Compensation ({nonprofit_size})",
+                            labels={"payrolltx": "Executive Compensation ($)"})
+    st.plotly_chart(fig_hist)
+    
+    # Financial Red Flags: Nonprofits spending <50% on programs
+    df_red_flags = df_filtered[df_filtered["totfuncexpns"] / df_filtered["totrevenue"] < 0.5]
+    st.subheader(f"⚠️ Financial Red Flags: Nonprofits Spending <50% on Programs ({nonprofit_size})")
+    
+    st.markdown(
+        "Nonprofits that spend less than 50% of their revenue on program expenses may indicate inefficiencies or potential governance concerns. "
+        "A high percentage of funds going towards administrative or other expenses instead of direct programs could be a red flag for donors, policymakers, and communities looking to assess nonprofit impact."
+    )
+    if not df_red_flags.empty:
+        fig_redflags = px.bar(df_red_flags, x="ein", y="totfuncexpns",
+                            title="Nonprofits Spending <50% on Programs",
+                            labels={"ein": "EIN", "totfuncexpns": "Total Functional Expenses"},
+                            color="totfuncexpns", template="plotly_dark")
+        st.plotly_chart(fig_redflags)
+    else:
+        st.markdown("✅ No nonprofits flagged under this criteria.")
 
+    # st.header("Compliance Status")
+    # # Compliance Status Pie Chart
+    # compliance_status = df_filtered["FILING_REQ_CD"].value_counts().reset_index()
+    # compliance_status.columns = ["Compliance Status", "Count"]
+    
+    # fig_compliance = px.pie(compliance_status, names="Compliance Status", values="Count",
+    #                         title=f"Compliance Status of Nonprofits ({nonprofit_size})")
+    # st.plotly_chart(fig_compliance)
 
-
-st.header("💰 Funding Flow & Sources")
-
-# Top Donors Leaderboard
-if "NAME" in df_env_990pf.columns:
-    top_donors = df_env_990pf.groupby("NAME")["FAIRMRKTVALAMT"].sum().nlargest(10).reset_index()
-else:
-    top_donors = df_env_990pf.groupby("EIN")["FAIRMRKTVALAMT"].sum().nlargest(10).reset_index()
-    top_donors.rename(columns={"EIN": "Donor"}, inplace=True)
-
-st.dataframe(top_donors, width=800)
-
-# Network Graph
-graph = nx.Graph()
-for _, row in df_env_990pf.iterrows():
-    donor_name = row["NAME"] if "NAME" in df_env_990pf.columns else row["EIN"]
-    graph.add_edge(donor_name, row["EIN"], weight=row["FAIRMRKTVALAMT"])
-
-plt.figure(figsize=(10, 6))
-nx.draw(graph, with_labels=True, node_size=20, font_size=8)
-st.pyplot(plt)
-
-# # Create a pie chart
-# fig = px.pie(compliance_status, 
-#              names='Compliance Status', 
-#              values='Count',
-#              title='Compliance Status of Nonprofits')
-# st.plotly_chart(fig)
-
-
-# # Page Title
-# st.title("Nonprofit IRS Form 990 Data Dashboard")
-# st.markdown("""
-# Explore nonprofit financial and operational data from IRS Form 990 filings.
-# """)
 
 
 # # Aggregate funding by NTEE_CD
@@ -320,56 +362,37 @@ st.pyplot(plt)
 
 
 
+###################################
+#      PHILANTHROPIC FLOW         #
+###################################
 
-# # # Generate points map for nonprofits
-# # layer = pdk.Layer(
-# #     "ScatterplotLayer",
-# #     data=data,
-# #     get_position="[longitude_column, latitude_column]",  # Replace with actual columns
-# #     get_radius=500,
-# #     get_color=[200, 30, 0, 160],
-# #     pickable=True,
-# # )
+with tabs[2]:
+    st.header("💰 Funding Flow & Sources")
 
-# # view_state = pdk.ViewState(latitude=37.7749, longitude=-122.4194, zoom=3)  # Adjust to USA
-# # st.pydeck_chart(pdk.Deck(layers=[layer], initial_view_state=view_state))
+    # Top Donors Leaderboard
+    if "name" in df_env_990pf.columns:
+        top_donors = df_env_990pf.groupby("name")["FAIRMRKTVALAMT"].sum().nlargest(10).reset_index()
+    else:
+        top_donors = df_env_990pf.groupby("EIN")["FAIRMRKTVALAMT"].sum().nlargest(10).reset_index()
+        top_donors.rename(columns={"EIN": "Donor"}, inplace=True)
 
-# ### Visualization 1: Interactive Top States by # of Nonprofits
-# # Top States by Number of Nonprofits
-# state_counts = data['STATE'].value_counts().reset_index()
-# state_counts.columns = ['State', 'Count']
+    st.dataframe(top_donors, width=800)
 
-# # Interactive Bar Chart
-# fig_states = px.bar(state_counts.head(10), 
-#                     x='State', y='Count', 
-#                     title='Top States by Number of Nonprofits',
-#                     labels={'Count': 'Number of Nonprofits'},
-#                     text='Count')
-
-# fig_states.update_traces(texttemplate='%{text}', textposition='outside')
-# fig_states.update_layout(xaxis_title='State', yaxis_title='Count of Nonprofits',
-#                          showlegend=False)
-
-# st.plotly_chart(fig_states)
-
-
-### Revenue Visualization
-# Revenue Distribution
-fig_revenue = px.histogram(df_bmf, 
-                           x='REVENUE_AMT', 
-                           nbins=50, 
-                           title='Distribution of Revenue Among Nonprofits',
-                           labels={'REVENUE_AMT': 'Revenue Amount'},
-                           log_y=True)
-
-fig_revenue.update_layout(xaxis_title='Revenue Amount (USD)', 
-                          yaxis_title='Frequency (Log Scale)',
-                          hovermode='x')
-
-st.plotly_chart(fig_revenue)
-
-# Add context
-st.markdown("**Note**: Most nonprofits have lower revenue, but there are some high-revenue outliers that significantly impact the overall distribution.")
+    st.header("INSERT SANKEY DIAGRAM HERE ;P")
+    # # Aggregate donor-recipient funding
+    # donor_funding = df_env_990pf.groupby("name")["FAIRMRKTVALAMT"].sum().nlargest(10).reset_index()
+    
+    # # Sankey Diagram Data
+    # sankey_data = dict(
+    #     source=list(range(len(donor_funding))),
+    #     target=[len(donor_funding) + i for i in range(len(donor_funding))],
+    #     value=donor_funding["FAIRMRKTVALAMT"].tolist()
+    # )
+    
+    # fig_sankey = px.sankey(node=dict(label=list(donor_funding["name"]) + list(donor_funding["name"])), 
+    #                         link=sankey_data,
+    #                         title="Flow of Philanthropic Funds")
+    # st.plotly_chart(fig_sankey)
 
 
 # # Top Sectors by Activity Code
@@ -392,15 +415,9 @@ st.markdown("**Note**: Most nonprofits have lower revenue, but there are some hi
 
 
 
-# # Select key metrics for visualization
-# st.subheader("Visualization")
-# metric = st.selectbox("Select a metric to analyze:", irs_data.columns)
-
-# if metric:
-#     st.write(f"### {metric} Distribution")
-#     fig, ax = plt.subplots()
-#     irs_data[metric].hist(bins=20, ax=ax)
-#     st.pyplot(fig)
+###################################
+#       SIDEBAR ADDITIONS         #
+###################################
 
 # Add logo to sidebar
 TUPLogo = read_logos("pictures")
