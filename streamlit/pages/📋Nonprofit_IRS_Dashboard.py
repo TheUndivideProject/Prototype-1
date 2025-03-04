@@ -106,7 +106,7 @@ st.title("🌱 Environmental Nonprofits Giving (2023)")
 
 
 # Tabs for navigation
-tabs = st.tabs(["Overview", "Funding Distribution", "Financial Health", "Funding Flow"])
+tabs = st.tabs(["Overview", "Financial Health", "Funding Flow"])
 
 with tabs[0]:
     # Compute stats
