@@ -13,7 +13,7 @@ This will start as comparative analysis of Corporations and Nonprofits. This wil
 - `streamlit/`: Contains all Streamlit app components.
   - `data/`: 
     - `corporate/`:  
-      - `financial-statement-and-notes-2024-processed.csv': CSV file containing preprocessed SEC Financial Statement and Notes Data Set (Submission and Numeric).
+      - `financial-statement-and-notes-2024-processed.csv`: CSV file containing preprocessed SEC Financial Statement and Notes Data Set (Submission and Numeric).
       - `preprocessing.ipynb`: Jupyter Notebook that outlines the steps for cleaning, transforming, and preparing the raw data for visualization.  
   - `pages/`:  
     - `📊 Corporate_SEC_Dashboard.py`: Documents insights from financial and philanthropic metrics from the Securities and Exchange Commission (SEC) financial statements of public companies.  
