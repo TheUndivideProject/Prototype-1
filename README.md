@@ -12,15 +12,14 @@ This will start as comparative analysis of Corporations and Nonprofits. This wil
 ## Folder Structure
 - `streamlit/`: Contains all Streamlit app components.
   - `data/`: 
-    - 'corporate/': 
-        - 'raw/': Original CSV files downloaded from SEC website (see details under **About the Data**). 
-        - 'processed': Processed CSV files.
-        - 'preprocessing.ipynb': Jupyter Notebook that outlines the steps for cleaning, transforming, and preparing the raw data for visualization.
+    - `corporate/`:  
+      - `raw/`: Original CSV files downloaded from the SEC website (see details under **About the Data**).  
+      - `processed/`: Processed CSV files.  
+      - `preprocessing.ipynb`: Jupyter Notebook that outlines the steps for cleaning, transforming, and preparing the raw data for visualization.  
   - `pages/`:  
     - `📊 Corporate_SEC_Dashboard.py`: Documents insights from financial and philanthropic metrics from the Securities and Exchange Commission (SEC) financial statements of public companies.  
     - `📋 Nonprofit_IRS_Dashboard.py`: Documents insights from financial and philanthropic metrics from the IRS Exempt Organizations Business Master File and Form 990 filings of tax-exempt organizations.  
-  - `Home.py`: Main landing page of the Streamlit app, providing a brief introduction to SEED and the goals of each dashboard.  
-
+  - `Home.py`: Main landing page of the Streamlit app, providing a brief introduction to SEED and the goals of each dashboard.
  
 ## Getting Started
 1. Clone the repo.
