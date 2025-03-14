@@ -263,7 +263,7 @@ plot_charts(2, [metric_distribution, metric_reporting_counts_donut], [metric_dis
 
 if state != "None":
     # get coordinates of selected state
-    state_coordinates = pd.read_csv("data/state-coordinates.csv")
+    state_coordinates = pd.read_csv("data/corporate/state-coordinates.csv")
     state_latitude, state_longitude = state_coordinates[state_coordinates["State"] == state][["Latitude", "Longitude"]].values[0]
 
     # create a map of companies reporting 'metric', centered on the selected state
