@@ -17,7 +17,7 @@ st.set_page_config(
 # load SEC Financial Statement and Notes data (https://www.sec.gov/data-research/sec-markets-data/financial-statement-notes-data-sets)
 @st.cache_data
 def load_data():
-    return pd.read_csv("data/financial-statement-and-notes-2024-modified.csv")
+    return pd.read_csv("data/corporate/financial-statement-and-notes-2024-processed.csv")
 data = load_data()
 
 # set page title
